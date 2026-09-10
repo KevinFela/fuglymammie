@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -10,16 +12,39 @@
 
     <title>Fuglymammie CMS — Dashboard</title>
 
+
+    <!-- =========================
+         FAVICON
+    ========================== -->
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="/favicon.png"
+    >
+
+
+    <!-- =========================
+         ADMIN CSS
+    ========================== -->
+
     <link
         rel="stylesheet"
-        href="../admin.css"
+        href="/admin/admin.css"
     >
+
 </head>
+
 
 <body>
 
-    <!-- HEADER -->
+
+    <!-- =========================================
+         HEADER
+    ========================================== -->
+
     <header class="admin-header">
+
 
         <a
             href="/"
@@ -28,11 +53,14 @@
             Fuglymammie
         </a>
 
+
         <div class="dashboard-header-right">
+
 
             <span class="admin-label">
                 CMS
             </span>
+
 
             <button
                 id="logout-button"
@@ -42,18 +70,28 @@
                 Log out
             </button>
 
+
         </div>
+
 
     </header>
 
 
-    <!-- DASHBOARD -->
+
+    <!-- =========================================
+         DASHBOARD
+    ========================================== -->
+
     <main class="dashboard-page">
 
+
         <!-- SIDEBAR -->
+
         <aside class="dashboard-sidebar">
 
+
             <nav class="dashboard-nav">
+
 
                 <button
                     class="dashboard-nav-button active"
@@ -63,6 +101,7 @@
                     Dashboard
                 </button>
 
+
                 <button
                     class="dashboard-nav-button"
                     data-section="events"
@@ -70,6 +109,7 @@
                 >
                     Events
                 </button>
+
 
                 <button
                     class="dashboard-nav-button"
@@ -79,22 +119,33 @@
                     Subscribers
                 </button>
 
+
             </nav>
+
 
         </aside>
 
 
-        <!-- CONTENT -->
+
+        <!-- =====================================
+             CONTENT
+        ====================================== -->
+
         <div class="dashboard-content">
 
 
-            <!-- OVERVIEW -->
+            <!-- ===============================
+                 OVERVIEW
+            ================================ -->
+
             <section
                 id="overview-section"
                 class="dashboard-section active"
             >
 
+
                 <div class="dashboard-section-header">
+
 
                     <div>
 
@@ -108,10 +159,13 @@
 
                     </div>
 
+
                 </div>
 
 
+
                 <div class="stats-grid">
+
 
                     <div class="stat-card">
 
@@ -127,6 +181,7 @@
                         </strong>
 
                     </div>
+
 
 
                     <div class="stat-card">
@@ -145,6 +200,7 @@
                     </div>
 
 
+
                     <div class="stat-card">
 
                         <span class="stat-label">
@@ -160,14 +216,18 @@
 
                     </div>
 
+
                 </div>
+
 
 
                 <div class="dashboard-block">
 
+
                     <p class="small-label">
                         QUICK ACTION
                     </p>
+
 
                     <button
                         id="overview-add-event"
@@ -177,18 +237,26 @@
                         + Add Event
                     </button>
 
+
                 </div>
+
 
             </section>
 
 
-            <!-- EVENTS -->
+
+            <!-- ===============================
+                 EVENTS
+            ================================ -->
+
             <section
                 id="events-section"
                 class="dashboard-section"
             >
 
+
                 <div class="dashboard-section-header">
+
 
                     <div>
 
@@ -203,6 +271,7 @@
                     </div>
 
 
+
                     <button
                         id="add-event-button"
                         class="primary-admin-button"
@@ -211,7 +280,9 @@
                         + Add Event
                     </button>
 
+
                 </div>
+
 
 
                 <div
@@ -225,16 +296,23 @@
 
                 </div>
 
+
             </section>
 
 
-            <!-- SUBSCRIBERS -->
+
+            <!-- ===============================
+                 SUBSCRIBERS
+            ================================ -->
+
             <section
                 id="subscribers-section"
                 class="dashboard-section"
             >
 
+
                 <div class="dashboard-section-header">
+
 
                     <div>
 
@@ -248,7 +326,9 @@
 
                     </div>
 
+
                 </div>
+
 
 
                 <div
@@ -262,22 +342,32 @@
 
                 </div>
 
+
             </section>
 
+
         </div>
+
 
     </main>
 
 
-    <!-- EVENT EDITOR MODAL -->
+
+    <!-- =========================================
+         ADD / EDIT EVENT MODAL
+    ========================================== -->
+
     <div
         id="event-editor-modal"
         class="admin-modal-overlay"
     >
 
+
         <div class="admin-modal">
 
+
             <div class="admin-modal-header">
+
 
                 <div>
 
@@ -292,6 +382,7 @@
                 </div>
 
 
+
                 <button
                     id="close-event-editor"
                     class="text-button"
@@ -300,16 +391,22 @@
                     [ x ]
                 </button>
 
+
             </div>
 
 
+
             <form id="event-form">
+
 
                 <input
                     type="hidden"
                     id="event-id"
                 >
 
+
+
+                <!-- TITLE -->
 
                 <div class="form-group">
 
@@ -327,6 +424,9 @@
                 </div>
 
 
+
+                <!-- DATE -->
+
                 <div class="form-group">
 
                     <label for="event-date">
@@ -342,6 +442,9 @@
 
                 </div>
 
+
+
+                <!-- LOCATION -->
 
                 <div class="form-group">
 
@@ -359,6 +462,9 @@
                 </div>
 
 
+
+                <!-- DESCRIPTION -->
+
                 <div class="form-group">
 
                     <label for="event-description">
@@ -373,6 +479,9 @@
 
                 </div>
 
+
+
+                <!-- TICKET -->
 
                 <div class="form-group">
 
@@ -389,6 +498,9 @@
 
                 </div>
 
+
+
+                <!-- STATUS -->
 
                 <div class="form-group">
 
@@ -426,6 +538,9 @@
                 </div>
 
 
+
+                <!-- PUBLISHED -->
+
                 <div class="checkbox-row">
 
                     <input
@@ -441,10 +556,12 @@
                 </div>
 
 
+
                 <p
                     id="event-form-message"
                     class="login-message"
                 ></p>
+
 
 
                 <button
@@ -455,36 +572,58 @@
                     Publish Event
                 </button>
 
+
             </form>
 
+
         </div>
+
 
     </div>
 
 
-    <!-- FOOTER -->
+
+    <!-- =========================================
+         FOOTER
+    ========================================== -->
+
     <footer class="admin-footer">
+
 
         <a href="/">
             ← View website
         </a>
 
+
         <span>
+
             ©
             <span id="admin-year"></span>
             Fuglymammie
+
         </span>
+
 
     </footer>
 
 
-    <!-- SUPABASE -->
+
+    <!-- =========================================
+         SUPABASE
+    ========================================== -->
+
     <script
         src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
     ></script>
 
-    <!-- DASHBOARD -->
-    <script src="../dashboard.js"></script>
+
+    <!-- =========================================
+         DASHBOARD JS
+    ========================================== -->
+
+    <script src="/admin/dashboard.js"></script>
+
 
 </body>
+
 </html>
