@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -8,33 +10,48 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>
-        Fuglymammie — MC & Event Promoter
-    </title>
+    <title>Fuglymammie — MC & Event Promoter</title>
 
     <meta
         name="description"
         content="Official Fuglymammie website — MC, host and event promoter."
     >
 
+
+    <!-- =========================
+         FAVICON
+    ========================== -->
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="/favicon.png"
+    >
+
+
+    <!-- =========================
+         CSS
+    ========================== -->
+
     <link
         rel="stylesheet"
-        href="style.css"
+        href="/style.css"
     >
+
 </head>
 
 
 <body>
 
 
-    <!-- ========================================= -->
-    <!-- HEADER -->
-    <!-- ========================================= -->
+    <!-- =========================================
+         HEADER
+    ========================================== -->
 
     <header>
 
         <a
-            href="#"
+            href="/"
             class="brand-title"
             id="brand-link"
         >
@@ -44,7 +61,9 @@
 
         <div class="nav-controls">
 
-            <!-- MAIN FEED -->
+
+            <!-- FEED -->
+
             <button
                 class="nav-btn"
                 id="feed-btn"
@@ -57,6 +76,7 @@
 
 
             <!-- UPCOMING EVENTS -->
+
             <button
                 class="nav-btn"
                 id="events-btn"
@@ -69,6 +89,7 @@
 
 
             <!-- JOIN NETWORK -->
+
             <button
                 class="nav-btn"
                 id="join-btn"
@@ -85,16 +106,16 @@
 
 
 
-    <!-- ========================================= -->
-    <!-- MAIN CONTENT -->
-    <!-- ========================================= -->
+    <!-- =========================================
+         MAIN
+    ========================================== -->
 
     <main>
 
 
-        <!-- ===================================== -->
-        <!-- MAIN FEED -->
-        <!-- ===================================== -->
+        <!-- =========================
+             MAIN FEED
+        ========================== -->
 
         <section
             id="feed-section"
@@ -116,9 +137,9 @@
 
 
 
-        <!-- ===================================== -->
-        <!-- UPCOMING EVENTS -->
-        <!-- ===================================== -->
+        <!-- =========================
+             UPCOMING EVENTS
+        ========================== -->
 
         <section
             id="events-section"
@@ -147,9 +168,9 @@
 
 
 
-    <!-- ========================================= -->
-    <!-- FOOTER -->
-    <!-- ========================================= -->
+    <!-- =========================================
+         FOOTER
+    ========================================== -->
 
     <footer>
 
@@ -178,18 +199,20 @@
 
 
         <div>
+
             ©
             <span id="year"></span>
             Fuglymammie
+
         </div>
 
     </footer>
 
 
 
-    <!-- ========================================= -->
-    <!-- EVENT DETAILS MODAL -->
-    <!-- ========================================= -->
+    <!-- =========================================
+         EVENT MODAL
+    ========================================== -->
 
     <div
         class="modal-overlay"
@@ -211,29 +234,25 @@
             <div
                 class="event-modal-date"
                 id="modal-date"
-            >
-            </div>
+            ></div>
 
 
             <h2
                 class="event-modal-title"
                 id="modal-title"
-            >
-            </h2>
+            ></h2>
 
 
             <div
                 class="event-modal-location"
                 id="modal-location"
-            >
-            </div>
+            ></div>
 
 
             <div
                 class="event-modal-body"
                 id="modal-body"
-            >
-            </div>
+            ></div>
 
 
             <a
@@ -246,16 +265,15 @@
                 Get Tickets / Venue Info
             </a>
 
-
         </div>
 
     </div>
 
 
 
-    <!-- ========================================= -->
-    <!-- JOIN NETWORK MODAL -->
-    <!-- ========================================= -->
+    <!-- =========================================
+         JOIN NETWORK MODAL
+    ========================================== -->
 
     <div
         class="modal-overlay"
@@ -289,8 +307,6 @@
             <form id="join-form">
 
 
-                <!-- FIRST NAME -->
-
                 <div class="form-group">
 
                     <input
@@ -305,8 +321,6 @@
                 </div>
 
 
-
-                <!-- LAST NAME -->
 
                 <div class="form-group">
 
@@ -323,8 +337,6 @@
 
 
 
-                <!-- EMAIL -->
-
                 <div class="form-group">
 
                     <input
@@ -340,8 +352,6 @@
 
 
 
-                <!-- CITY -->
-
                 <div class="form-group">
 
                     <input
@@ -356,15 +366,12 @@
 
 
 
-                <!-- SUBMIT -->
-
                 <button
                     type="submit"
                     class="form-submit"
                 >
                     Join Network
                 </button>
-
 
             </form>
 
@@ -373,9 +380,7 @@
             <p
                 id="join-message"
                 class="form-message"
-            >
-            </p>
-
+            ></p>
 
         </div>
 
@@ -383,22 +388,22 @@
 
 
 
-    <!-- ========================================= -->
-    <!-- SUPABASE -->
-    <!-- MUST LOAD BEFORE script.js -->
-    <!-- ========================================= -->
+    <!-- =========================================
+         SUPABASE
+    ========================================== -->
 
     <script
         src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
     ></script>
 
 
-    <!-- ========================================= -->
-    <!-- FUGLYMAMMIE JAVASCRIPT -->
-    <!-- ========================================= -->
+    <!-- =========================================
+         WEBSITE JS
+    ========================================== -->
 
-    <script src="script.js"></script>
+    <script src="/script.js"></script>
 
 
 </body>
+
 </html>
