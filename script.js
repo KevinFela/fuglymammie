@@ -910,7 +910,7 @@ joinForm.addEventListener(
 document.getElementById(
     "instagram-link"
 ).href =
-    "https://instagram.com";
+    "https://instagram.com/fuglymammie";
 
 
 document.getElementById(
