@@ -1,11 +1,5 @@
 // ======================================================
-// FUGLYMAMMIE CMS
-// DASHBOARD
-// ======================================================
-
-
-// ======================================================
-// 1. SUPABASE CONNECTION
+// FUGLYMAMMIE CMS DASHBOARD
 // ======================================================
 
 const SUPABASE_URL =
@@ -15,71 +9,94 @@ const SUPABASE_KEY =
     "sb_publishable_u-kQrZgBjM35l7xVeBaaCw_sm2vVHXq";
 
 
-const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
-
-// ======================================================
-// 2. GLOBAL DATA
-// ======================================================
 
 let adminEvents = [];
 let subscribers = [];
 
 
 // ======================================================
-// 3. ELEMENTS
+// ELEMENTS
 // ======================================================
 
 const logoutButton =
-    document.getElementById("logout-button");
+    document.getElementById(
+        "logout-button"
+    );
 
 const adminEventsList =
-    document.getElementById("admin-events-list");
+    document.getElementById(
+        "admin-events-list"
+    );
 
 const subscriberList =
-    document.getElementById("subscriber-list");
+    document.getElementById(
+        "subscriber-list"
+    );
 
 const totalEventsElement =
-    document.getElementById("total-events");
+    document.getElementById(
+        "total-events"
+    );
 
 const upcomingEventsCountElement =
-    document.getElementById("upcoming-events-count");
+    document.getElementById(
+        "upcoming-events-count"
+    );
 
 const subscriberCountElement =
-    document.getElementById("subscriber-count");
-
+    document.getElementById(
+        "subscriber-count"
+    );
 
 const addEventButton =
-    document.getElementById("add-event-button");
+    document.getElementById(
+        "add-event-button"
+    );
 
 const overviewAddEventButton =
-    document.getElementById("overview-add-event");
-
+    document.getElementById(
+        "overview-add-event"
+    );
 
 const eventEditorModal =
-    document.getElementById("event-editor-modal");
+    document.getElementById(
+        "event-editor-modal"
+    );
 
 const closeEventEditorButton =
-    document.getElementById("close-event-editor");
+    document.getElementById(
+        "close-event-editor"
+    );
 
 const eventForm =
-    document.getElementById("event-form");
+    document.getElementById(
+        "event-form"
+    );
 
 const eventFormHeading =
-    document.getElementById("event-form-heading");
+    document.getElementById(
+        "event-form-heading"
+    );
 
 const eventFormMessage =
-    document.getElementById("event-form-message");
+    document.getElementById(
+        "event-form-message"
+    );
 
 const saveEventButton =
-    document.getElementById("save-event-button");
+    document.getElementById(
+        "save-event-button"
+    );
 
 
 // ======================================================
-// 4. ESCAPE HTML
+// HELPERS
 // ======================================================
 
 function escapeHTML(value) {
@@ -99,10 +116,6 @@ function escapeHTML(value) {
         .replaceAll("'", "&#039;");
 }
 
-
-// ======================================================
-// 5. FORMAT DATE
-// ======================================================
 
 function formatDate(dateString) {
 
@@ -126,20 +139,15 @@ function formatDate(dateString) {
 }
 
 
-// ======================================================
-// 6. FORMAT DATE + TIME
-// ======================================================
-
 function formatDateTime(dateString) {
 
     if (!dateString) {
         return "";
     }
 
-    const date =
-        new Date(dateString);
-
-    return date.toLocaleString(
+    return new Date(
+        dateString
+    ).toLocaleString(
         "en-ZA",
         {
             day: "2-digit",
@@ -153,7 +161,7 @@ function formatDateTime(dateString) {
 
 
 // ======================================================
-// 7. CHECK ADMIN SESSION
+// REQUIRE ADMIN
 // ======================================================
 
 async function requireAdmin() {
@@ -161,9 +169,7 @@ async function requireAdmin() {
     try {
 
         const {
-            data: {
-                session
-            },
+            data,
             error
         } =
             await supabaseClient
@@ -173,11 +179,12 @@ async function requireAdmin() {
 
         if (
             error ||
-            !session
+            !data.session
         ) {
 
+            // /admin/dashboard/ -> /admin/
             window.location.href =
-                "index.html";
+                "../";
 
             return null;
         }
@@ -189,10 +196,12 @@ async function requireAdmin() {
         } =
             await supabaseClient
                 .from("admins")
-                .select("user_id, email")
+                .select(
+                    "user_id, email"
+                )
                 .eq(
                     "user_id",
-                    session.user.id
+                    data.session.user.id
                 )
                 .maybeSingle();
 
@@ -208,25 +217,25 @@ async function requireAdmin() {
 
 
             window.location.href =
-                "index.html";
+                "../";
 
             return null;
         }
 
 
-        return session.user;
+        return data.session.user;
 
 
     } catch (error) {
 
         console.error(
-            "Admin authentication error:",
+            "Admin check failed:",
             error
         );
 
 
         window.location.href =
-            "index.html";
+            "../";
 
         return null;
     }
@@ -234,7 +243,7 @@ async function requireAdmin() {
 
 
 // ======================================================
-// 8. LOAD EVENTS
+// LOAD EVENTS
 // ======================================================
 
 async function loadAdminEvents() {
@@ -252,18 +261,7 @@ async function loadAdminEvents() {
     } =
         await supabaseClient
             .from("events")
-            .select(`
-                id,
-                title,
-                event_date,
-                location,
-                description,
-                ticket_url,
-                status,
-                published,
-                created_at,
-                updated_at
-            `)
+            .select("*")
             .order(
                 "event_date",
                 {
@@ -275,7 +273,7 @@ async function loadAdminEvents() {
     if (error) {
 
         console.error(
-            "Load events error:",
+            "Events error:",
             error
         );
 
@@ -296,12 +294,12 @@ async function loadAdminEvents() {
 
     renderAdminEvents();
 
-    updateDashboardStats();
+    updateStats();
 }
 
 
 // ======================================================
-// 9. LOAD SUBSCRIBERS
+// LOAD SUBSCRIBERS
 // ======================================================
 
 async function loadSubscribers() {
@@ -319,14 +317,7 @@ async function loadSubscribers() {
     } =
         await supabaseClient
             .from("subscribers")
-            .select(`
-                id,
-                first_name,
-                last_name,
-                email,
-                city,
-                created_at
-            `)
+            .select("*")
             .order(
                 "created_at",
                 {
@@ -338,7 +329,7 @@ async function loadSubscribers() {
     if (error) {
 
         console.error(
-            "Load subscribers error:",
+            "Subscribers error:",
             error
         );
 
@@ -359,30 +350,55 @@ async function loadSubscribers() {
 
     renderSubscribers();
 
-    updateDashboardStats();
+    updateStats();
 }
 
 
 // ======================================================
-// 10. DASHBOARD STATS
+// STATS
 // ======================================================
 
-function updateDashboardStats() {
+function updateStats() {
 
-    const upcomingCount =
+    const today =
+        new Date();
+
+    today.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+
+    const upcoming =
         adminEvents.filter(
-            event =>
-                event.status === "upcoming"
-        ).length;
+            event => {
+
+                if (
+                    event.status !==
+                    "upcoming"
+                ) {
+                    return false;
+                }
+
+
+                const eventDate =
+                    new Date(
+                        `${event.event_date}T00:00:00`
+                    );
+
+
+                return eventDate >= today;
+            }
+        );
 
 
     totalEventsElement.textContent =
         adminEvents.length;
 
-
     upcomingEventsCountElement.textContent =
-        upcomingCount;
-
+        upcoming.length;
 
     subscriberCountElement.textContent =
         subscribers.length;
@@ -390,7 +406,7 @@ function updateDashboardStats() {
 
 
 // ======================================================
-// 11. RENDER EVENTS
+// RENDER EVENTS
 // ======================================================
 
 function renderAdminEvents() {
@@ -408,35 +424,13 @@ function renderAdminEvents() {
 
 
     adminEventsList.innerHTML =
-        adminEvents
-            .map(event => {
+        adminEvents.map(
+            event => {
 
-                const publishedText =
+                const publishState =
                     event.published
                         ? "Published"
                         : "Hidden";
-
-
-                const location =
-                    event.location
-                        ? escapeHTML(
-                            event.location
-                        )
-                        : "No location";
-
-
-                let postponeButton =
-                    "Postpone";
-
-
-                if (
-                    event.status ===
-                    "postponed"
-                ) {
-
-                    postponeButton =
-                        "Set Upcoming";
-                }
 
 
                 return `
@@ -460,7 +454,10 @@ function renderAdminEvents() {
 
                             <div class="admin-list-meta">
 
-                                ${location}
+                                ${escapeHTML(
+                                    event.location ||
+                                    "No location"
+                                )}
 
                                 ·
 
@@ -470,7 +467,7 @@ function renderAdminEvents() {
 
                                 ·
 
-                                ${publishedText}
+                                ${publishState}
 
                             </div>
 
@@ -495,7 +492,12 @@ function renderAdminEvents() {
                                 data-id="${event.id}"
                                 type="button"
                             >
-                                ${postponeButton}
+                                ${
+                                    event.status ===
+                                    "postponed"
+                                        ? "Set Upcoming"
+                                        : "Postpone"
+                                }
                             </button>
 
 
@@ -536,13 +538,13 @@ function renderAdminEvents() {
 
                     </article>
                 `;
-            })
-            .join("");
+            }
+        ).join("");
 }
 
 
 // ======================================================
-// 12. RENDER SUBSCRIBERS
+// RENDER SUBSCRIBERS
 // ======================================================
 
 function renderSubscribers() {
@@ -560,8 +562,8 @@ function renderSubscribers() {
 
 
     subscriberList.innerHTML =
-        subscribers
-            .map(subscriber => {
+        subscribers.map(
+            subscriber => {
 
                 const fullName =
                     `${subscriber.first_name || ""}
@@ -588,13 +590,10 @@ function renderSubscribers() {
 
                             <div class="subscriber-city">
 
-                                ${
-                                    subscriber.city
-                                        ? escapeHTML(
-                                            subscriber.city
-                                        )
-                                        : "No city"
-                                }
+                                ${escapeHTML(
+                                    subscriber.city ||
+                                    "No city"
+                                )}
 
                                 · joined
 
@@ -610,77 +609,74 @@ function renderSubscribers() {
 
                     </article>
                 `;
-            })
-            .join("");
+            }
+        ).join("");
 }
 
 
 // ======================================================
-// 13. DASHBOARD NAVIGATION
+// DASHBOARD NAVIGATION
 // ======================================================
 
 document
     .querySelectorAll(
         ".dashboard-nav-button"
     )
-    .forEach(button => {
+    .forEach(
+        button => {
 
-        button.addEventListener(
-            "click",
-            () => {
+            button.addEventListener(
+                "click",
+                () => {
 
-                const section =
-                    button.dataset.section;
-
-
-                document
-                    .querySelectorAll(
-                        ".dashboard-nav-button"
-                    )
-                    .forEach(item => {
-
-                        item.classList.remove(
-                            "active"
+                    document
+                        .querySelectorAll(
+                            ".dashboard-nav-button"
+                        )
+                        .forEach(
+                            item =>
+                                item.classList.remove(
+                                    "active"
+                                )
                         );
-                    });
 
 
-                button.classList.add(
-                    "active"
-                );
-
-
-                document
-                    .querySelectorAll(
-                        ".dashboard-section"
-                    )
-                    .forEach(sectionElement => {
-
-                        sectionElement.classList.remove(
-                            "active"
-                        );
-                    });
-
-
-                const target =
-                    document.getElementById(
-                        `${section}-section`
-                    );
-
-
-                if (target) {
-
-                    target.classList.add(
+                    button.classList.add(
                         "active"
                     );
+
+
+                    document
+                        .querySelectorAll(
+                            ".dashboard-section"
+                        )
+                        .forEach(
+                            section =>
+                                section.classList.remove(
+                                    "active"
+                                )
+                        );
+
+
+                    const target =
+                        document.getElementById(
+                            `${button.dataset.section}-section`
+                        );
+
+
+                    if (target) {
+                        target.classList.add(
+                            "active"
+                        );
+                    }
                 }
-            }
-        );
-    });
+            );
+        }
+    );
 
 
 // ======================================================
-// 14. OPEN ADD EVENT MODAL
+// ADD EVENT
 // ======================================================
 
 function openAddEventModal() {
@@ -724,19 +720,21 @@ function openAddEventModal() {
 
 
 // ======================================================
-// 15. OPEN EDIT EVENT MODAL
+// EDIT EVENT
 // ======================================================
 
-function openEditEventModal(eventId) {
+function openEditEventModal(
+    eventId
+) {
 
-    const event =
+    const selected =
         adminEvents.find(
-            item =>
-                item.id === eventId
+            event =>
+                event.id === eventId
         );
 
 
-    if (!event) {
+    if (!selected) {
         return;
     }
 
@@ -744,49 +742,49 @@ function openEditEventModal(eventId) {
     document.getElementById(
         "event-id"
     ).value =
-        event.id;
+        selected.id;
 
 
     document.getElementById(
         "event-title"
     ).value =
-        event.title || "";
+        selected.title || "";
 
 
     document.getElementById(
         "event-date"
     ).value =
-        event.event_date || "";
+        selected.event_date || "";
 
 
     document.getElementById(
         "event-location"
     ).value =
-        event.location || "";
+        selected.location || "";
 
 
     document.getElementById(
         "event-description"
     ).value =
-        event.description || "";
+        selected.description || "";
 
 
     document.getElementById(
         "event-ticket-url"
     ).value =
-        event.ticket_url || "";
+        selected.ticket_url || "";
 
 
     document.getElementById(
         "event-status"
     ).value =
-        event.status || "upcoming";
+        selected.status || "upcoming";
 
 
     document.getElementById(
         "event-published"
     ).checked =
-        event.published;
+        !!selected.published;
 
 
     eventFormHeading.textContent =
@@ -808,7 +806,7 @@ function openEditEventModal(eventId) {
 
 
 // ======================================================
-// 16. CLOSE EVENT MODAL
+// CLOSE MODAL
 // ======================================================
 
 function closeEventModal() {
@@ -816,16 +814,8 @@ function closeEventModal() {
     eventEditorModal.classList.remove(
         "active"
     );
-
-
-    eventFormMessage.textContent =
-        "";
 }
 
-
-// ======================================================
-// 17. ADD EVENT BUTTONS
-// ======================================================
 
 addEventButton.addEventListener(
     "click",
@@ -846,7 +836,7 @@ closeEventEditorButton.addEventListener(
 
 
 // ======================================================
-// 18. SAVE EVENT
+// SAVE EVENT
 // ======================================================
 
 eventForm.addEventListener(
@@ -856,89 +846,60 @@ eventForm.addEventListener(
         event.preventDefault();
 
 
-        const eventId =
-            document
-                .getElementById(
-                    "event-id"
-                )
-                .value;
+        const id =
+            document.getElementById(
+                "event-id"
+            ).value;
 
 
         const title =
-            document
-                .getElementById(
-                    "event-title"
-                )
-                .value
-                .trim();
+            document.getElementById(
+                "event-title"
+            ).value.trim();
 
 
         const eventDate =
-            document
-                .getElementById(
-                    "event-date"
-                )
-                .value;
+            document.getElementById(
+                "event-date"
+            ).value;
 
 
         const location =
-            document
-                .getElementById(
-                    "event-location"
-                )
-                .value
-                .trim();
+            document.getElementById(
+                "event-location"
+            ).value.trim();
 
 
         const description =
-            document
-                .getElementById(
-                    "event-description"
-                )
-                .value
-                .trim();
+            document.getElementById(
+                "event-description"
+            ).value.trim();
 
 
         const ticketUrl =
-            document
-                .getElementById(
-                    "event-ticket-url"
-                )
-                .value
-                .trim();
+            document.getElementById(
+                "event-ticket-url"
+            ).value.trim();
 
 
         const status =
-            document
-                .getElementById(
-                    "event-status"
-                )
-                .value;
+            document.getElementById(
+                "event-status"
+            ).value;
 
 
         let published =
-            document
-                .getElementById(
-                    "event-published"
-                )
-                .checked;
+            document.getElementById(
+                "event-published"
+            ).checked;
 
 
-        // Draft events should never appear
-        // on the public website.
-
-        if (
-            status === "draft"
-        ) {
-
+        if (status === "draft") {
             published = false;
         }
 
 
-        if (
-            !title ||
-            !eventDate
-        ) {
+        if (!title || !eventDate) {
 
             eventFormMessage.textContent =
                 "Title and date are required.";
@@ -947,10 +908,9 @@ eventForm.addEventListener(
         }
 
 
-        const eventData = {
+        const payload = {
 
-            title:
-                title,
+            title,
 
             event_date:
                 eventDate,
@@ -964,11 +924,9 @@ eventForm.addEventListener(
             ticket_url:
                 ticketUrl || null,
 
-            status:
-                status,
+            status,
 
-            published:
-                published,
+            published,
 
             updated_at:
                 new Date().toISOString()
@@ -980,13 +938,7 @@ eventForm.addEventListener(
 
 
         saveEventButton.textContent =
-            eventId
-                ? "Saving..."
-                : "Publishing...";
-
-
-        eventFormMessage.textContent =
-            "";
+            "Saving...";
 
 
         try {
@@ -994,15 +946,15 @@ eventForm.addEventListener(
             let result;
 
 
-            if (eventId) {
+            if (id) {
 
                 result =
                     await supabaseClient
                         .from("events")
-                        .update(eventData)
+                        .update(payload)
                         .eq(
                             "id",
-                            eventId
+                            id
                         );
 
             } else {
@@ -1011,19 +963,18 @@ eventForm.addEventListener(
                     await supabaseClient
                         .from("events")
                         .insert([
-                            eventData
+                            payload
                         ]);
             }
 
 
             if (result.error) {
-
                 throw result.error;
             }
 
 
             eventFormMessage.textContent =
-                eventId
+                id
                     ? "Event updated."
                     : "Event created.";
 
@@ -1032,11 +983,7 @@ eventForm.addEventListener(
 
 
             setTimeout(
-                () => {
-
-                    closeEventModal();
-
-                },
+                closeEventModal,
                 500
             );
 
@@ -1044,13 +991,15 @@ eventForm.addEventListener(
         } catch (error) {
 
             console.error(
-                "Save event error:",
+                "Save error:",
                 error
             );
 
 
             eventFormMessage.textContent =
+                error.message ||
                 "Unable to save event.";
+
 
         } finally {
 
@@ -1059,7 +1008,7 @@ eventForm.addEventListener(
 
 
             saveEventButton.textContent =
-                eventId
+                id
                     ? "Save Changes"
                     : "Publish Event";
         }
@@ -1068,11 +1017,11 @@ eventForm.addEventListener(
 
 
 // ======================================================
-// 19. QUICK UPDATE EVENT
+// QUICK UPDATE
 // ======================================================
 
 async function updateEvent(
-    eventId,
+    id,
     changes
 ) {
 
@@ -1089,34 +1038,27 @@ async function updateEvent(
             })
             .eq(
                 "id",
-                eventId
+                id
             );
 
 
     if (error) {
 
-        console.error(
-            "Update event error:",
-            error
-        );
-
-
         alert(
+            error.message ||
             "Unable to update event."
         );
 
-        return false;
+        return;
     }
 
 
     await loadAdminEvents();
-
-    return true;
 }
 
 
 // ======================================================
-// 20. EVENT ACTION BUTTONS
+// EVENT ACTIONS
 // ======================================================
 
 adminEventsList.addEventListener(
@@ -1134,157 +1076,111 @@ adminEventsList.addEventListener(
         }
 
 
-        const eventId =
+        const id =
             button.dataset.id;
-
 
         const action =
             button.dataset.action;
 
 
-        const selectedEvent =
+        const selected =
             adminEvents.find(
                 item =>
-                    item.id === eventId
+                    item.id === id
             );
 
 
-        if (!selectedEvent) {
+        if (!selected) {
             return;
         }
 
 
-        // EDIT
-
-        if (
-            action === "edit"
-        ) {
+        if (action === "edit") {
 
             openEditEventModal(
-                eventId
+                id
             );
 
             return;
         }
 
 
-        // POSTPONE / RESTORE
+        if (action === "postpone") {
 
-        if (
-            action === "postpone"
-        ) {
-
-            if (
-                selectedEvent.status ===
-                "postponed"
-            ) {
-
-                await updateEvent(
-                    eventId,
-                    {
-                        status:
-                            "upcoming"
-                    }
-                );
-
-            } else {
-
-                await updateEvent(
-                    eventId,
-                    {
-                        status:
-                            "postponed"
-                    }
-                );
-            }
+            await updateEvent(
+                id,
+                {
+                    status:
+                        selected.status ===
+                        "postponed"
+                            ? "upcoming"
+                            : "postponed"
+                }
+            );
 
             return;
         }
 
 
-        // CANCEL
+        if (action === "cancel") {
 
-        if (
-            action === "cancel"
-        ) {
-
-            const confirmed =
-                confirm(
-                    `Cancel "${selectedEvent.title}"?`
-                );
-
-
-            if (!confirmed) {
+            if (
+                !confirm(
+                    `Cancel "${selected.title}"?`
+                )
+            ) {
                 return;
             }
 
 
             await updateEvent(
-                eventId,
+                id,
                 {
                     status:
                         "cancelled"
                 }
             );
 
-
             return;
         }
 
 
-        // PUBLISH / HIDE
+        if (action === "publish") {
 
-        if (
-            action === "publish"
-        ) {
+            let status =
+                selected.status;
 
-            let newStatus =
-                selectedEvent.status;
-
-
-            // Publishing a draft converts
-            // it to upcoming.
 
             if (
-                !selectedEvent.published &&
-                selectedEvent.status ===
-                "draft"
+                !selected.published &&
+                status === "draft"
             ) {
-
-                newStatus =
+                status =
                     "upcoming";
             }
 
 
             await updateEvent(
-                eventId,
+                id,
                 {
                     published:
-                        !selectedEvent.published,
+                        !selected.published,
 
-                    status:
-                        newStatus
+                    status
                 }
             );
-
 
             return;
         }
 
 
-        // DELETE
+        if (action === "delete") {
 
-        if (
-            action === "delete"
-        ) {
-
-            const confirmed =
-                confirm(
-                    `Permanently delete "${selectedEvent.title}"?`
-                );
-
-
-            if (!confirmed) {
+            if (
+                !confirm(
+                    `Permanently delete "${selected.title}"?`
+                )
+            ) {
                 return;
             }
 
@@ -1297,19 +1193,14 @@ adminEventsList.addEventListener(
                     .delete()
                     .eq(
                         "id",
-                        eventId
+                        id
                     );
 
 
             if (error) {
 
-                console.error(
-                    "Delete event error:",
-                    error
-                );
-
-
                 alert(
+                    error.message ||
                     "Unable to delete event."
                 );
 
@@ -1324,7 +1215,7 @@ adminEventsList.addEventListener(
 
 
 // ======================================================
-// 21. CLOSE MODAL ON BACKGROUND CLICK
+// MODAL BACKGROUND / ESC
 // ======================================================
 
 eventEditorModal.addEventListener(
@@ -1335,25 +1226,17 @@ eventEditorModal.addEventListener(
             event.target ===
             eventEditorModal
         ) {
-
             closeEventModal();
         }
     }
 );
 
-
-// ======================================================
-// 22. ESC KEY
-// ======================================================
 
 document.addEventListener(
     "keydown",
     event => {
 
-        if (
-            event.key === "Escape"
-        ) {
-
+        if (event.key === "Escape") {
             closeEventModal();
         }
     }
@@ -1361,7 +1244,7 @@ document.addEventListener(
 
 
 // ======================================================
-// 23. LOGOUT
+// LOGOUT
 // ======================================================
 
 logoutButton.addEventListener(
@@ -1373,14 +1256,15 @@ logoutButton.addEventListener(
             .signOut();
 
 
+        // /admin/dashboard/ -> /admin/
         window.location.href =
-            "index.html";
+            "../";
     }
 );
 
 
 // ======================================================
-// 24. YEAR
+// YEAR
 // ======================================================
 
 const yearElement =
@@ -1397,16 +1281,16 @@ if (yearElement) {
 
 
 // ======================================================
-// 25. START CMS
+// START
 // ======================================================
 
 async function startDashboard() {
 
-    const user =
+    const admin =
         await requireAdmin();
 
 
-    if (!user) {
+    if (!admin) {
         return;
     }
 

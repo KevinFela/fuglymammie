@@ -3,28 +3,11 @@
 // ADMIN LOGIN
 // ======================================================
 
-
-// ======================================================
-// 1. SUPABASE CONNECTION
-// ======================================================
-
 const SUPABASE_URL =
     "https://kdrenkxjhhupuvjhpdrk.supabase.co";
 
 const SUPABASE_KEY =
     "sb_publishable_u-kQrZgBjM35l7xVeBaaCw_sm2vVHXq";
-
-
-if (typeof supabase === "undefined") {
-
-    console.error(
-        "Supabase library failed to load."
-    );
-
-    throw new Error(
-        "Supabase library is not available."
-    );
-}
 
 
 const supabaseClient =
@@ -33,10 +16,6 @@ const supabaseClient =
         SUPABASE_KEY
     );
 
-
-// ======================================================
-// 2. PAGE ELEMENTS
-// ======================================================
 
 const loginForm =
     document.getElementById(
@@ -69,35 +48,20 @@ const yearElement =
     );
 
 
-// ======================================================
-// 3. COPYRIGHT YEAR
-// ======================================================
-
 if (yearElement) {
-
     yearElement.textContent =
         new Date().getFullYear();
 }
 
 
-// ======================================================
-// 4. SHOW MESSAGE
-// ======================================================
-
 function showMessage(message) {
 
-    if (!loginMessage) {
-        return;
+    if (loginMessage) {
+        loginMessage.textContent =
+            message;
     }
-
-    loginMessage.textContent =
-        message;
 }
 
-
-// ======================================================
-// 5. CHECK IF USER EXISTS IN ADMINS TABLE
-// ======================================================
 
 async function checkAdmin(userId) {
 
@@ -130,13 +94,13 @@ async function checkAdmin(userId) {
         }
 
 
-        return data !== null;
+        return !!data;
 
 
     } catch (error) {
 
         console.error(
-            "Unexpected admin check error:",
+            "Admin check failed:",
             error
         );
 
@@ -144,10 +108,6 @@ async function checkAdmin(userId) {
     }
 }
 
-
-// ======================================================
-// 6. LOGIN
-// ======================================================
 
 if (loginForm) {
 
@@ -168,10 +128,7 @@ if (loginForm) {
                 passwordInput.value;
 
 
-            if (
-                !email ||
-                !password
-            ) {
+            if (!email || !password) {
 
                 showMessage(
                     "Enter your email and password."
@@ -181,23 +138,16 @@ if (loginForm) {
             }
 
 
-            // Clear previous error
             showMessage("");
 
 
-            loginButton.disabled =
-                true;
-
+            loginButton.disabled = true;
 
             loginButton.textContent =
                 "Logging in...";
 
 
             try {
-
-                // ======================================
-                // LOGIN USING SUPABASE AUTH
-                // ======================================
 
                 const {
                     data,
@@ -211,66 +161,38 @@ if (loginForm) {
                         });
 
 
-                // ======================================
-                // SHOW REAL SUPABASE ERROR
-                // ======================================
-
                 if (error) {
 
                     console.error(
-                        "Supabase login error:",
+                        "Login error:",
                         error
                     );
-
 
                     showMessage(
                         error.message
                     );
 
-
                     return;
                 }
 
 
-                if (
-                    !data ||
-                    !data.user
-                ) {
+                if (!data.user) {
 
                     showMessage(
-                        "Login failed. No user session was created."
+                        "Unable to log in."
                     );
 
                     return;
                 }
 
 
-                const user =
-                    data.user;
-
-
-                console.log(
-                    "Logged in user:",
-                    user.id
-                );
-
-
-                // ======================================
-                // CHECK IF USER IS APPROVED ADMIN
-                // ======================================
-
                 const isAdmin =
                     await checkAdmin(
-                        user.id
+                        data.user.id
                     );
 
 
                 if (!isAdmin) {
-
-                    console.warn(
-                        "User is authenticated but is not an approved admin."
-                    );
-
 
                     await supabaseClient
                         .auth
@@ -278,44 +200,34 @@ if (loginForm) {
 
 
                     showMessage(
-                        "Access denied. This account is not an approved administrator."
+                        "Access denied."
                     );
-
 
                     return;
                 }
 
-
-                // ======================================
-                // SUCCESS
-                // ======================================
 
                 showMessage(
                     "Access granted."
                 );
 
 
-                console.log(
-                    "Admin verified."
-                );
-
-
-                // Send to dashboard
+                // CLEAN URL
                 window.location.href =
-                    "dashboard.html";
+                    "dashboard/";
 
 
             } catch (error) {
 
                 console.error(
-                    "Unexpected login error:",
+                    "Login failed:",
                     error
                 );
 
 
                 showMessage(
                     error.message ||
-                    "Something went wrong. Please try again."
+                    "Something went wrong."
                 );
 
 
@@ -323,7 +235,6 @@ if (loginForm) {
 
                 loginButton.disabled =
                     false;
-
 
                 loginButton.textContent =
                     "Log in";
@@ -334,7 +245,7 @@ if (loginForm) {
 
 
 // ======================================================
-// 7. CHECK EXISTING SESSION
+// EXISTING SESSION
 // ======================================================
 
 async function checkExistingSession() {
@@ -350,75 +261,28 @@ async function checkExistingSession() {
                 .getSession();
 
 
-        if (error) {
-
-            console.error(
-                "Session error:",
-                error
-            );
-
+        if (
+            error ||
+            !data.session
+        ) {
             return;
         }
 
-
-        const session =
-            data.session;
-
-
-        // No login session
-        if (!session) {
-
-            console.log(
-                "No existing admin session."
-            );
-
-            return;
-        }
-
-
-        console.log(
-            "Existing session found."
-        );
-
-
-        const user =
-            session.user;
-
-
-        if (!user) {
-            return;
-        }
-
-
-        // ======================================
-        // CHECK ADMIN TABLE
-        // ======================================
 
         const isAdmin =
             await checkAdmin(
-                user.id
+                data.session.user.id
             );
 
 
         if (isAdmin) {
 
-            console.log(
-                "Existing admin session verified."
-            );
-
-
+            // CLEAN URL
             window.location.href =
-                "dashboard.html";
-
+                "dashboard/";
 
             return;
         }
-
-
-        // User logged in but not admin
-        console.warn(
-            "Existing user is not approved admin."
-        );
 
 
         await supabaseClient
@@ -429,15 +293,11 @@ async function checkExistingSession() {
     } catch (error) {
 
         console.error(
-            "Existing session check failed:",
+            "Session check error:",
             error
         );
     }
 }
 
-
-// ======================================================
-// 8. START ADMIN LOGIN PAGE
-// ======================================================
 
 checkExistingSession();
