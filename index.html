@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Fuglymammie — MC & Event Promoter
+    </title>
+
+    <meta
+        name="description"
+        content="Official Fuglymammie website — MC, host and event promoter."
+    >
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+</head>
+
+
+<body>
+
+
+    <!-- ========================================= -->
+    <!-- HEADER -->
+    <!-- ========================================= -->
+
+    <header>
+
+        <a
+            href="#"
+            class="brand-title"
+            id="brand-link"
+        >
+            Fuglymammie
+        </a>
+
+
+        <div class="nav-controls">
+
+            <!-- MAIN FEED -->
+            <button
+                class="nav-btn"
+                id="feed-btn"
+                type="button"
+                title="Feed"
+                aria-label="Feed"
+            >
+                ○
+            </button>
+
+
+            <!-- UPCOMING EVENTS -->
+            <button
+                class="nav-btn"
+                id="events-btn"
+                type="button"
+                title="Upcoming Events"
+                aria-label="Upcoming Events"
+            >
+                △
+            </button>
+
+
+            <!-- JOIN NETWORK -->
+            <button
+                class="nav-btn"
+                id="join-btn"
+                type="button"
+                title="Join Network"
+                aria-label="Join Network"
+            >
+                +
+            </button>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ========================================= -->
+    <!-- MAIN CONTENT -->
+    <!-- ========================================= -->
+
+    <main>
+
+
+        <!-- ===================================== -->
+        <!-- MAIN FEED -->
+        <!-- ===================================== -->
+
+        <section
+            id="feed-section"
+            class="page-section active"
+        >
+
+            <ul
+                class="feed-list"
+                id="feed-container"
+            >
+
+                <li class="empty-state">
+                    Loading...
+                </li>
+
+            </ul>
+
+        </section>
+
+
+
+        <!-- ===================================== -->
+        <!-- UPCOMING EVENTS -->
+        <!-- ===================================== -->
+
+        <section
+            id="events-section"
+            class="page-section"
+        >
+
+            <div class="section-heading">
+                UPCOMING EVENTS
+            </div>
+
+
+            <ul
+                class="feed-list"
+                id="upcoming-events-container"
+            >
+
+                <li class="empty-state">
+                    Loading...
+                </li>
+
+            </ul>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- ========================================= -->
+    <!-- FOOTER -->
+    <!-- ========================================= -->
+
+    <footer>
+
+        <div class="footer-links">
+
+            <a
+                href="#"
+                id="instagram-link"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                IG
+            </a>
+
+
+            <a
+                href="#"
+                id="x-link"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                X
+            </a>
+
+        </div>
+
+
+        <div>
+            ©
+            <span id="year"></span>
+            Fuglymammie
+        </div>
+
+    </footer>
+
+
+
+    <!-- ========================================= -->
+    <!-- EVENT DETAILS MODAL -->
+    <!-- ========================================= -->
+
+    <div
+        class="modal-overlay"
+        id="event-modal"
+    >
+
+        <div class="modal-content">
+
+
+            <button
+                class="modal-close"
+                id="event-modal-close"
+                type="button"
+            >
+                [ x ]
+            </button>
+
+
+            <div
+                class="event-modal-date"
+                id="modal-date"
+            >
+            </div>
+
+
+            <h2
+                class="event-modal-title"
+                id="modal-title"
+            >
+            </h2>
+
+
+            <div
+                class="event-modal-location"
+                id="modal-location"
+            >
+            </div>
+
+
+            <div
+                class="event-modal-body"
+                id="modal-body"
+            >
+            </div>
+
+
+            <a
+                href="#"
+                class="event-modal-link"
+                id="modal-ticket-btn"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Get Tickets / Venue Info
+            </a>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ========================================= -->
+    <!-- JOIN NETWORK MODAL -->
+    <!-- ========================================= -->
+
+    <div
+        class="modal-overlay"
+        id="join-modal"
+    >
+
+        <div class="modal-content">
+
+
+            <button
+                class="modal-close"
+                id="join-modal-close"
+                type="button"
+            >
+                [ x ]
+            </button>
+
+
+            <div class="auth-header-text">
+
+                welcome to the network.
+
+                <br>
+
+                speak soon.
+
+            </div>
+
+
+
+            <form id="join-form">
+
+
+                <!-- FIRST NAME -->
+
+                <div class="form-group">
+
+                    <input
+                        type="text"
+                        id="first-name"
+                        class="form-input"
+                        placeholder="First name"
+                        autocomplete="given-name"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- LAST NAME -->
+
+                <div class="form-group">
+
+                    <input
+                        type="text"
+                        id="last-name"
+                        class="form-input"
+                        placeholder="Last name"
+                        autocomplete="family-name"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- EMAIL -->
+
+                <div class="form-group">
+
+                    <input
+                        type="email"
+                        id="email"
+                        class="form-input"
+                        placeholder="Email"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- CITY -->
+
+                <div class="form-group">
+
+                    <input
+                        type="text"
+                        id="city"
+                        class="form-input"
+                        placeholder="City / Region"
+                        autocomplete="address-level2"
+                    >
+
+                </div>
+
+
+
+                <!-- SUBMIT -->
+
+                <button
+                    type="submit"
+                    class="form-submit"
+                >
+                    Join Network
+                </button>
+
+
+            </form>
+
+
+
+            <p
+                id="join-message"
+                class="form-message"
+            >
+            </p>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ========================================= -->
+    <!-- SUPABASE -->
+    <!-- MUST LOAD BEFORE script.js -->
+    <!-- ========================================= -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+    <!-- ========================================= -->
+    <!-- FUGLYMAMMIE JAVASCRIPT -->
+    <!-- ========================================= -->
+
+    <script src="script.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Fuglymammie CMS</title>
+
+    <link
+        rel="stylesheet"
+        href="admin.css"
+    >
+</head>
+
+<body>
+
+    <header class="admin-header">
+
+        <a
+            href="../index.html"
+            class="admin-brand"
+        >
+            Fuglymammie
+        </a>
+
+        <span class="admin-label">
+            CMS
+        </span>
+
+    </header>
+
+
+    <main class="login-page">
+
+        <section class="login-box">
+
+            <div class="login-heading">
+
+                <p class="small-label">
+                    FUGLYMAMMIE CMS
+                </p>
+
+                <h1>
+                    Admin access.
+                </h1>
+
+                <p class="login-description">
+                    Manage events, subscribers and website content.
+                </p>
+
+            </div>
+
+
+            <form id="admin-login-form">
+
+                <div class="form-group">
+
+                    <label for="admin-email">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="admin-email"
+                        class="form-input"
+                        placeholder="admin@email.com"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="admin-password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="admin-password"
+                        class="form-input"
+                        placeholder="Password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="login-button"
+                    id="login-button"
+                >
+                    Log in
+                </button>
+
+
+                <p
+                    id="login-message"
+                    class="login-message"
+                ></p>
+
+            </form>
+
+        </section>
+
+    </main>
+
+
+    <footer class="admin-footer">
+
+        <a href="../index.html">
+            ← Public website
+        </a>
+
+        <span>
+            © <span id="admin-year"></span>
+            Fuglymammie
+        </span>
+
+    </footer>
+
+
+    <!-- SUPABASE -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+    <!-- ADMIN JAVASCRIPT -->
+    <script src="admin.js"></script>
+
+</body>
+</html>
