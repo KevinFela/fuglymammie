@@ -1,409 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Fuglymammie </title>
-
-    <meta
-        name="description"
-        content="Official Fuglymammie website and Gig Guide."
-    >
-
-
-    <!-- =========================
-         FAVICON
-    ========================== -->
-
-    <link
-        rel="icon"
-        type="image/png"
-        href="/favicon.png"
-    >
-
-
-    <!-- =========================
-         CSS
-    ========================== -->
-
-    <link
-        rel="stylesheet"
-        href="/style.css"
-    >
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fuglymammie — MC & Event Promoter</title>
+  <meta name="description" content="Official Fuglymammie website — MC, host and event promoter.">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/style.css">
 </head>
-
-
 <body>
-
-
-    <!-- =========================================
-         HEADER
-    ========================================== -->
-
-    <header>
-
-        <a
-            href="/"
-            class="brand-title"
-            id="brand-link"
-        >
-            Fuglymammie
-        </a>
-
-
-        <div class="nav-controls">
-
-
-            <!-- FEED -->
-
-            <button
-                class="nav-btn"
-                id="feed-btn"
-                type="button"
-                title="Feed"
-                aria-label="Feed"
-            >
-                ○
-            </button>
-
-
-            <!-- UPCOMING EVENTS -->
-
-            <button
-                class="nav-btn"
-                id="events-btn"
-                type="button"
-                title="Upcoming Events"
-                aria-label="Upcoming Events"
-            >
-                △
-            </button>
-
-
-            <!-- JOIN NETWORK -->
-
-            <button
-                class="nav-btn"
-                id="join-btn"
-                type="button"
-                title="Join Network"
-                aria-label="Join Network"
-            >
-                +
-            </button>
-
-        </div>
-
-    </header>
-
-
-
-    <!-- =========================================
-         MAIN
-    ========================================== -->
-
-    <main>
-
-
-        <!-- =========================
-             MAIN FEED
-        ========================== -->
-
-        <section
-            id="feed-section"
-            class="page-section active"
-        >
-
-            <ul
-                class="feed-list"
-                id="feed-container"
-            >
-
-                <li class="empty-state">
-                    Loading...
-                </li>
-
-            </ul>
-
-        </section>
-
-
-
-        <!-- =========================
-             UPCOMING EVENTS
-        ========================== -->
-
-        <section
-            id="events-section"
-            class="page-section"
-        >
-
-            <div class="section-heading">
-                UPCOMING EVENTS
-            </div>
-
-
-            <ul
-                class="feed-list"
-                id="upcoming-events-container"
-            >
-
-                <li class="empty-state">
-                    Loading...
-                </li>
-
-            </ul>
-
-        </section>
-
-    </main>
-
-
-
-    <!-- =========================================
-         FOOTER
-    ========================================== -->
-
-    <footer>
-
-        <div class="footer-links">
-
-            <a
-                href="#"
-                id="instagram-link"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                IG
-            </a>
-
-
-            <a
-                href="#"
-                id="x-link"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                X
-            </a>
-
-        </div>
-
-
-        <div>
-
-            ©
-            <span id="year"></span>
-            Fuglymammie
-
-        </div>
-
-    </footer>
-
-
-
-    <!-- =========================================
-         EVENT MODAL
-    ========================================== -->
-
-    <div
-        class="modal-overlay"
-        id="event-modal"
-    >
-
-        <div class="modal-content">
-
-
-            <button
-                class="modal-close"
-                id="event-modal-close"
-                type="button"
-            >
-                [ x ]
-            </button>
-
-
-            <div
-                class="event-modal-date"
-                id="modal-date"
-            ></div>
-
-
-            <h2
-                class="event-modal-title"
-                id="modal-title"
-            ></h2>
-
-
-            <div
-                class="event-modal-location"
-                id="modal-location"
-            ></div>
-
-
-            <div
-                class="event-modal-body"
-                id="modal-body"
-            ></div>
-
-
-            <a
-                href="#"
-                class="event-modal-link"
-                id="modal-ticket-btn"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                Get Tickets / Venue Info
-            </a>
-
-        </div>
-
+  <header>
+    <a href="/" class="brand-title" id="brand-link">Fuglymammie</a>
+    <div class="nav-controls">
+      <button class="nav-btn" id="feed-btn" type="button" title="Feed">○</button>
+      <button class="nav-btn" id="events-btn" type="button" title="Upcoming Events">△</button>
+      <button class="nav-btn" id="join-btn" type="button" title="Join Network">+</button>
     </div>
+  </header>
 
+  <main>
+    <section id="feed-section" class="page-section active">
+      <ul class="feed-list" id="feed-container"><li class="empty-state">Loading...</li></ul>
+    </section>
 
+    <section id="events-section" class="page-section">
+      <div class="section-heading">UPCOMING EVENTS</div>
+      <ul class="feed-list" id="upcoming-events-container"><li class="empty-state">Loading...</li></ul>
+    </section>
+  </main>
 
-    <!-- =========================================
-         JOIN NETWORK MODAL
-    ========================================== -->
-
-    <div
-        class="modal-overlay"
-        id="join-modal"
-    >
-
-        <div class="modal-content">
-
-
-            <button
-                class="modal-close"
-                id="join-modal-close"
-                type="button"
-            >
-                [ x ]
-            </button>
-
-
-            <div class="auth-header-text">
-
-                welcome to the network.
-
-                <br>
-
-                speak soon.
-
-            </div>
-
-
-
-            <form id="join-form">
-
-
-                <div class="form-group">
-
-                    <input
-                        type="text"
-                        id="first-name"
-                        class="form-input"
-                        placeholder="First name"
-                        autocomplete="given-name"
-                        required
-                    >
-
-                </div>
-
-
-
-                <div class="form-group">
-
-                    <input
-                        type="text"
-                        id="last-name"
-                        class="form-input"
-                        placeholder="Last name"
-                        autocomplete="family-name"
-                        required
-                    >
-
-                </div>
-
-
-
-                <div class="form-group">
-
-                    <input
-                        type="email"
-                        id="email"
-                        class="form-input"
-                        placeholder="Email"
-                        autocomplete="email"
-                        required
-                    >
-
-                </div>
-
-
-
-                <div class="form-group">
-
-                    <input
-                        type="text"
-                        id="city"
-                        class="form-input"
-                        placeholder="City / Region"
-                        autocomplete="address-level2"
-                    >
-
-                </div>
-
-
-
-                <button
-                    type="submit"
-                    class="form-submit"
-                >
-                    Join Network
-                </button>
-
-            </form>
-
-
-
-            <p
-                id="join-message"
-                class="form-message"
-            ></p>
-
-        </div>
-
+  <footer>
+    <div class="footer-links">
+      <a href="#" id="instagram-link" target="_blank" rel="noopener noreferrer">IG</a>
+      <a href="#" id="x-link" target="_blank" rel="noopener noreferrer">X</a>
     </div>
+    <div>© <span id="year"></span> Fuglymammie</div>
+  </footer>
 
+  <div class="modal-overlay" id="event-modal">
+    <div class="modal-content">
+      <button class="modal-close" id="event-modal-close" type="button">[ x ]</button>
 
+      <div class="event-modal-image-wrap" id="modal-image-wrap" hidden>
+        <img id="modal-image" src="" alt="">
+      </div>
 
-    <!-- =========================================
-         SUPABASE
-    ========================================== -->
+      <div class="event-modal-date" id="modal-date"></div>
+      <div class="event-entry-badge" id="modal-entry-type"></div>
+      <h2 class="event-modal-title" id="modal-title"></h2>
+      <div class="event-modal-location" id="modal-location"></div>
+      <div class="event-modal-body" id="modal-body"></div>
 
-    <script
-        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-    ></script>
+      <div class="event-modal-actions">
+        <a href="#" class="event-modal-link" id="modal-ticket-btn" target="_blank" rel="noopener noreferrer" hidden>Get Tickets</a>
+        <a href="#" class="event-modal-link" id="modal-video-btn" target="_blank" rel="noopener noreferrer" hidden>Watch Video</a>
+      </div>
+    </div>
+  </div>
 
+  <div class="modal-overlay" id="join-modal">
+    <div class="modal-content">
+      <button class="modal-close" id="join-modal-close" type="button">[ x ]</button>
+      <div class="auth-header-text">welcome to the network.<br>speak soon.</div>
 
-    <!-- =========================================
-         WEBSITE JS
-    ========================================== -->
+      <form id="join-form">
+        <div class="form-group"><input type="text" id="first-name" class="form-input" placeholder="First name" required></div>
+        <div class="form-group"><input type="text" id="last-name" class="form-input" placeholder="Last name" required></div>
+        <div class="form-group"><input type="email" id="email" class="form-input" placeholder="Email" required></div>
+        <div class="form-group"><input type="text" id="city" class="form-input" placeholder="City / Region"></div>
+        <button type="submit" class="form-submit">Join Network</button>
+      </form>
 
-    <script src="/script.js"></script>
+      <p id="join-message" class="form-message"></p>
+    </div>
+  </div>
 
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/script.js"></script>
 </body>
-
 </html>

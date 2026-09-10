@@ -1,1305 +1,199 @@
-// ======================================================
-// FUGLYMAMMIE CMS DASHBOARD
-// ======================================================
+const SUPABASE_URL="https://kdrenkxjhhupuvjhpdrk.supabase.co";
+const SUPABASE_KEY="sb_publishable_u-kQrZgBjM35l7xVeBaaCw_sm2vVHXq";
+const BUCKET="event-media";
+const MAX_IMAGE_SIZE=10*1024*1024;
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-const SUPABASE_URL =
-    "https://kdrenkxjhhupuvjhpdrk.supabase.co";
+let adminEvents=[],subscribers=[],removeExistingImage=false;
 
-const SUPABASE_KEY =
-    "sb_publishable_u-kQrZgBjM35l7xVeBaaCw_sm2vVHXq";
+const $=id=>document.getElementById(id);
+const logoutButton=$("logout-button"),adminEventsList=$("admin-events-list"),subscriberList=$("subscriber-list");
+const totalEventsElement=$("total-events"),upcomingEventsCountElement=$("upcoming-events-count"),subscriberCountElement=$("subscriber-count");
+const addEventButton=$("add-event-button"),overviewAddEventButton=$("overview-add-event"),eventEditorModal=$("event-editor-modal");
+const closeEventEditorButton=$("close-event-editor"),eventForm=$("event-form"),eventFormHeading=$("event-form-heading");
+const eventFormMessage=$("event-form-message"),saveEventButton=$("save-event-button"),entryTypeInput=$("event-entry-type");
+const ticketUrlInput=$("event-ticket-url"),ticketUrlLabel=$("ticket-url-label"),ticketUrlHelp=$("ticket-url-help");
+const imageInput=$("event-image"),imagePreview=$("event-image-preview"),existingImageUrlInput=$("existing-image-url"),removeImageButton=$("remove-event-image");
 
+function escapeHTML(v){if(v===null||v===undefined)return "";return String(v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+function formatDate(s){return s?new Date(`${s}T00:00:00`).toLocaleDateString("en-ZA",{day:"2-digit",month:"short",year:"numeric"}):""}
+function formatDateTime(s){return s?new Date(s).toLocaleString("en-ZA",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}):""}
+function entryLabel(t){return {free:"Free",ticketed:"Ticketed",rsvp:"RSVP",invite_only:"Invite Only"}[t]||"Free"}
 
-const supabaseClient =
-    supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
-
-
-let adminEvents = [];
-let subscribers = [];
-
-
-// ======================================================
-// ELEMENTS
-// ======================================================
-
-const logoutButton =
-    document.getElementById(
-        "logout-button"
-    );
-
-const adminEventsList =
-    document.getElementById(
-        "admin-events-list"
-    );
-
-const subscriberList =
-    document.getElementById(
-        "subscriber-list"
-    );
-
-const totalEventsElement =
-    document.getElementById(
-        "total-events"
-    );
-
-const upcomingEventsCountElement =
-    document.getElementById(
-        "upcoming-events-count"
-    );
-
-const subscriberCountElement =
-    document.getElementById(
-        "subscriber-count"
-    );
-
-const addEventButton =
-    document.getElementById(
-        "add-event-button"
-    );
-
-const overviewAddEventButton =
-    document.getElementById(
-        "overview-add-event"
-    );
-
-const eventEditorModal =
-    document.getElementById(
-        "event-editor-modal"
-    );
-
-const closeEventEditorButton =
-    document.getElementById(
-        "close-event-editor"
-    );
-
-const eventForm =
-    document.getElementById(
-        "event-form"
-    );
-
-const eventFormHeading =
-    document.getElementById(
-        "event-form-heading"
-    );
-
-const eventFormMessage =
-    document.getElementById(
-        "event-form-message"
-    );
-
-const saveEventButton =
-    document.getElementById(
-        "save-event-button"
-    );
-
-
-// ======================================================
-// HELPERS
-// ======================================================
-
-function escapeHTML(value) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-        return "";
-    }
-
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+function updateEntryTypeFields(){
+  const t=entryTypeInput.value;
+  if(t==="ticketed"){ticketUrlLabel.textContent="Ticket URL";ticketUrlHelp.textContent="Optional, but recommended for ticketed events."}
+  else if(t==="rsvp"){ticketUrlLabel.textContent="RSVP URL";ticketUrlHelp.textContent="Optional. Add a registration link if you have one."}
+  else if(t==="invite_only"){ticketUrlLabel.textContent="Event Info URL";ticketUrlHelp.textContent="Optional. Invite-only events do not need a public booking link."}
+  else{ticketUrlLabel.textContent="Event Info URL";ticketUrlHelp.textContent="Optional. Free events can leave this empty."}
 }
 
-
-function formatDate(dateString) {
-
-    if (!dateString) {
-        return "";
-    }
-
-    const date =
-        new Date(
-            `${dateString}T00:00:00`
-        );
-
-    return date.toLocaleDateString(
-        "en-ZA",
-        {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-        }
-    );
+function showImagePreview(url){
+  imagePreview.innerHTML="";
+  if(!url){removeImageButton.hidden=true;return}
+  const img=document.createElement("img");img.src=url;img.alt="Event poster preview";imagePreview.appendChild(img);removeImageButton.hidden=false;
 }
 
+function safeName(n){return n.toLowerCase().replace(/[^a-z0-9._-]+/g,"-").replace(/-+/g,"-")}
+function filePath(file){const id=crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(36).slice(2)}`;return `events/${id}-${safeName(file.name)}`}
+function storagePath(url){if(!url)return null;const m=`/storage/v1/object/public/${BUCKET}/`;const i=url.indexOf(m);if(i<0)return null;try{return decodeURIComponent(url.slice(i+m.length))}catch{return url.slice(i+m.length)}}
 
-function formatDateTime(dateString) {
-
-    if (!dateString) {
-        return "";
-    }
-
-    return new Date(
-        dateString
-    ).toLocaleString(
-        "en-ZA",
-        {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
-        }
-    );
+async function requireAdmin(){
+  const {data,error}=await supabaseClient.auth.getSession();
+  if(error||!data.session){location.href="../";return null}
+  const {data:admin,error:aerr}=await supabaseClient.from("admins").select("user_id").eq("user_id",data.session.user.id).maybeSingle();
+  if(aerr||!admin){await supabaseClient.auth.signOut();location.href="../";return null}
+  return data.session.user;
 }
 
-
-// ======================================================
-// REQUIRE ADMIN
-// ======================================================
-
-async function requireAdmin() {
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .auth
-                .getSession();
-
-
-        if (
-            error ||
-            !data.session
-        ) {
-
-            // /admin/dashboard/ -> /admin/
-            window.location.href =
-                "../";
-
-            return null;
-        }
-
-
-        const {
-            data: admin,
-            error: adminError
-        } =
-            await supabaseClient
-                .from("admins")
-                .select(
-                    "user_id, email"
-                )
-                .eq(
-                    "user_id",
-                    data.session.user.id
-                )
-                .maybeSingle();
-
-
-        if (
-            adminError ||
-            !admin
-        ) {
-
-            await supabaseClient
-                .auth
-                .signOut();
-
-
-            window.location.href =
-                "../";
-
-            return null;
-        }
-
-
-        return data.session.user;
-
-
-    } catch (error) {
-
-        console.error(
-            "Admin check failed:",
-            error
-        );
-
-
-        window.location.href =
-            "../";
-
-        return null;
-    }
+async function loadAdminEvents(){
+  const {data,error}=await supabaseClient.from("events")
+    .select("id,title,event_date,location,description,ticket_url,status,published,created_at,updated_at,entry_type,image_url,video_url")
+    .order("event_date",{ascending:false});
+  if(error){console.error(error);adminEventsList.innerHTML='<p class="dashboard-loading">Unable to load events.</p>';return}
+  adminEvents=data||[];renderAdminEvents();updateStats();
 }
 
-
-// ======================================================
-// LOAD EVENTS
-// ======================================================
-
-async function loadAdminEvents() {
-
-    adminEventsList.innerHTML = `
-        <p class="dashboard-loading">
-            Loading events...
-        </p>
-    `;
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("events")
-            .select("*")
-            .order(
-                "event_date",
-                {
-                    ascending: false
-                }
-            );
-
-
-    if (error) {
-
-        console.error(
-            "Events error:",
-            error
-        );
-
-
-        adminEventsList.innerHTML = `
-            <p class="dashboard-loading">
-                Unable to load events.
-            </p>
-        `;
-
-        return;
-    }
-
-
-    adminEvents =
-        data || [];
-
-
-    renderAdminEvents();
-
-    updateStats();
+async function loadSubscribers(){
+  const {data,error}=await supabaseClient.from("subscribers").select("*").order("created_at",{ascending:false});
+  if(error){console.error(error);subscriberList.innerHTML='<p class="dashboard-loading">Unable to load subscribers.</p>';return}
+  subscribers=data||[];renderSubscribers();updateStats();
 }
 
-
-// ======================================================
-// LOAD SUBSCRIBERS
-// ======================================================
-
-async function loadSubscribers() {
-
-    subscriberList.innerHTML = `
-        <p class="dashboard-loading">
-            Loading subscribers...
-        </p>
-    `;
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("subscribers")
-            .select("*")
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
-
-
-    if (error) {
-
-        console.error(
-            "Subscribers error:",
-            error
-        );
-
-
-        subscriberList.innerHTML = `
-            <p class="dashboard-loading">
-                Unable to load subscribers.
-            </p>
-        `;
-
-        return;
-    }
-
-
-    subscribers =
-        data || [];
-
-
-    renderSubscribers();
-
-    updateStats();
+function updateStats(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const upcoming=adminEvents.filter(e=>e.status==="upcoming"&&new Date(`${e.event_date}T00:00:00`)>=today);
+  totalEventsElement.textContent=adminEvents.length;upcomingEventsCountElement.textContent=upcoming.length;subscriberCountElement.textContent=subscribers.length;
 }
 
-
-// ======================================================
-// STATS
-// ======================================================
-
-function updateStats() {
-
-    const today =
-        new Date();
-
-    today.setHours(
-        0,
-        0,
-        0,
-        0
-    );
-
-
-    const upcoming =
-        adminEvents.filter(
-            event => {
-
-                if (
-                    event.status !==
-                    "upcoming"
-                ) {
-                    return false;
-                }
-
-
-                const eventDate =
-                    new Date(
-                        `${event.event_date}T00:00:00`
-                    );
-
-
-                return eventDate >= today;
-            }
-        );
-
-
-    totalEventsElement.textContent =
-        adminEvents.length;
-
-    upcomingEventsCountElement.textContent =
-        upcoming.length;
-
-    subscriberCountElement.textContent =
-        subscribers.length;
+function renderAdminEvents(){
+  adminEventsList.innerHTML=adminEvents.length?adminEvents.map(e=>`
+    <article class="admin-list-item">
+      <div class="admin-event-main">
+        ${e.image_url?`<img class="admin-event-thumb" src="${escapeHTML(e.image_url)}" alt="">`:""}
+        <div>
+          <span class="admin-list-date">${escapeHTML(formatDate(e.event_date))}</span>
+          <div class="admin-list-title">${escapeHTML(e.title)}</div>
+          <div class="admin-list-meta">${escapeHTML(e.location||"No location")} · ${escapeHTML(entryLabel(e.entry_type))} · ${escapeHTML(e.status)} · ${e.published?"Published":"Hidden"}${e.video_url?" · Video":""}</div>
+        </div>
+      </div>
+      <div class="admin-list-actions">
+        <button class="admin-action-button" data-action="edit" data-id="${e.id}">Edit</button>
+        <button class="admin-action-button" data-action="postpone" data-id="${e.id}">${e.status==="postponed"?"Set Upcoming":"Postpone"}</button>
+        <button class="admin-action-button" data-action="cancel" data-id="${e.id}">Cancel</button>
+        <button class="admin-action-button" data-action="publish" data-id="${e.id}">${e.published?"Hide":"Publish"}</button>
+        <button class="admin-action-button danger" data-action="delete" data-id="${e.id}">Delete</button>
+      </div>
+    </article>`).join(""):'<p class="dashboard-loading">No events yet.</p>';
 }
 
-
-// ======================================================
-// RENDER EVENTS
-// ======================================================
-
-function renderAdminEvents() {
-
-    if (!adminEvents.length) {
-
-        adminEventsList.innerHTML = `
-            <p class="dashboard-loading">
-                No events yet.
-            </p>
-        `;
-
-        return;
-    }
-
-
-    adminEventsList.innerHTML =
-        adminEvents.map(
-            event => {
-
-                const publishState =
-                    event.published
-                        ? "Published"
-                        : "Hidden";
-
-
-                return `
-                    <article class="admin-list-item">
-
-                        <div class="admin-list-main">
-
-                            <span class="admin-list-date">
-                                ${escapeHTML(
-                                    formatDate(
-                                        event.event_date
-                                    )
-                                )}
-                            </span>
-
-                            <div class="admin-list-title">
-                                ${escapeHTML(
-                                    event.title
-                                )}
-                            </div>
-
-                            <div class="admin-list-meta">
-
-                                ${escapeHTML(
-                                    event.location ||
-                                    "No location"
-                                )}
-
-                                ·
-
-                                ${escapeHTML(
-                                    event.status
-                                )}
-
-                                ·
-
-                                ${publishState}
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="admin-list-actions">
-
-                            <button
-                                class="admin-action-button"
-                                data-action="edit"
-                                data-id="${event.id}"
-                                type="button"
-                            >
-                                Edit
-                            </button>
-
-
-                            <button
-                                class="admin-action-button"
-                                data-action="postpone"
-                                data-id="${event.id}"
-                                type="button"
-                            >
-                                ${
-                                    event.status ===
-                                    "postponed"
-                                        ? "Set Upcoming"
-                                        : "Postpone"
-                                }
-                            </button>
-
-
-                            <button
-                                class="admin-action-button"
-                                data-action="cancel"
-                                data-id="${event.id}"
-                                type="button"
-                            >
-                                Cancel
-                            </button>
-
-
-                            <button
-                                class="admin-action-button"
-                                data-action="publish"
-                                data-id="${event.id}"
-                                type="button"
-                            >
-                                ${
-                                    event.published
-                                        ? "Hide"
-                                        : "Publish"
-                                }
-                            </button>
-
-
-                            <button
-                                class="admin-action-button danger"
-                                data-action="delete"
-                                data-id="${event.id}"
-                                type="button"
-                            >
-                                Delete
-                            </button>
-
-                        </div>
-
-                    </article>
-                `;
-            }
-        ).join("");
+function renderSubscribers(){
+  subscriberList.innerHTML=subscribers.length?subscribers.map(s=>`
+    <article class="admin-list-item"><div>
+      <div class="subscriber-email">${escapeHTML(s.email)}</div>
+      <div class="subscriber-name">${escapeHTML(`${s.first_name||""} ${s.last_name||""}`.trim())}</div>
+      <div class="subscriber-city">${escapeHTML(s.city||"No city")} · joined ${escapeHTML(formatDateTime(s.created_at))}</div>
+    </div></article>`).join(""):'<p class="dashboard-loading">No subscribers yet.</p>';
 }
 
+document.querySelectorAll(".dashboard-nav-button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".dashboard-nav-button").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+  document.querySelectorAll(".dashboard-section").forEach(x=>x.classList.remove("active"));$(`${b.dataset.section}-section`).classList.add("active");
+});
 
-// ======================================================
-// RENDER SUBSCRIBERS
-// ======================================================
-
-function renderSubscribers() {
-
-    if (!subscribers.length) {
-
-        subscriberList.innerHTML = `
-            <p class="dashboard-loading">
-                No subscribers yet.
-            </p>
-        `;
-
-        return;
-    }
-
-
-    subscriberList.innerHTML =
-        subscribers.map(
-            subscriber => {
-
-                const fullName =
-                    `${subscriber.first_name || ""}
-                    ${subscriber.last_name || ""}`
-                        .trim();
-
-
-                return `
-                    <article class="admin-list-item">
-
-                        <div class="admin-list-main">
-
-                            <div class="subscriber-email">
-                                ${escapeHTML(
-                                    subscriber.email
-                                )}
-                            </div>
-
-                            <div class="subscriber-name">
-                                ${escapeHTML(
-                                    fullName
-                                )}
-                            </div>
-
-                            <div class="subscriber-city">
-
-                                ${escapeHTML(
-                                    subscriber.city ||
-                                    "No city"
-                                )}
-
-                                · joined
-
-                                ${escapeHTML(
-                                    formatDateTime(
-                                        subscriber.created_at
-                                    )
-                                )}
-
-                            </div>
-
-                        </div>
-
-                    </article>
-                `;
-            }
-        ).join("");
+function openAdd(){
+  eventForm.reset();removeExistingImage=false;imageInput.value="";existingImageUrlInput.value="";showImagePreview("");
+  $("event-id").value="";$("event-status").value="upcoming";entryTypeInput.value="free";$("event-published").checked=true;
+  eventFormHeading.textContent="Add Event";saveEventButton.textContent="Publish Event";eventFormMessage.textContent="";updateEntryTypeFields();
+  eventEditorModal.classList.add("active");
 }
 
-
-// ======================================================
-// DASHBOARD NAVIGATION
-// ======================================================
-
-document
-    .querySelectorAll(
-        ".dashboard-nav-button"
-    )
-    .forEach(
-        button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    document
-                        .querySelectorAll(
-                            ".dashboard-nav-button"
-                        )
-                        .forEach(
-                            item =>
-                                item.classList.remove(
-                                    "active"
-                                )
-                        );
-
-
-                    button.classList.add(
-                        "active"
-                    );
-
-
-                    document
-                        .querySelectorAll(
-                            ".dashboard-section"
-                        )
-                        .forEach(
-                            section =>
-                                section.classList.remove(
-                                    "active"
-                                )
-                        );
-
-
-                    const target =
-                        document.getElementById(
-                            `${button.dataset.section}-section`
-                        );
-
-
-                    if (target) {
-                        target.classList.add(
-                            "active"
-                        );
-                    }
-                }
-            );
-        }
-    );
-
-
-// ======================================================
-// ADD EVENT
-// ======================================================
-
-function openAddEventModal() {
-
-    eventForm.reset();
-
-
-    document.getElementById(
-        "event-id"
-    ).value = "";
-
-
-    document.getElementById(
-        "event-status"
-    ).value =
-        "upcoming";
-
-
-    document.getElementById(
-        "event-published"
-    ).checked =
-        true;
-
-
-    eventFormHeading.textContent =
-        "Add Event";
-
-
-    saveEventButton.textContent =
-        "Publish Event";
-
-
-    eventFormMessage.textContent =
-        "";
-
-
-    eventEditorModal.classList.add(
-        "active"
-    );
+function openEdit(id){
+  const e=adminEvents.find(x=>x.id===id);if(!e)return;
+  eventForm.reset();removeExistingImage=false;$("event-id").value=e.id;$("event-title").value=e.title||"";$("event-date").value=e.event_date||"";
+  $("event-location").value=e.location||"";$("event-description").value=e.description||"";ticketUrlInput.value=e.ticket_url||"";
+  $("event-video-url").value=e.video_url||"";entryTypeInput.value=e.entry_type||"free";$("event-status").value=e.status||"upcoming";
+  $("event-published").checked=!!e.published;imageInput.value="";existingImageUrlInput.value=e.image_url||"";showImagePreview(e.image_url||"");
+  eventFormHeading.textContent="Edit Event";saveEventButton.textContent="Save Changes";eventFormMessage.textContent="";updateEntryTypeFields();
+  eventEditorModal.classList.add("active");
 }
 
+function closeModal(){eventEditorModal.classList.remove("active");eventFormMessage.textContent=""}
+addEventButton.onclick=openAdd;overviewAddEventButton.onclick=openAdd;closeEventEditorButton.onclick=closeModal;entryTypeInput.onchange=updateEntryTypeFields;
+eventEditorModal.onclick=e=>{if(e.target===eventEditorModal)closeModal()};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
 
-// ======================================================
-// EDIT EVENT
-// ======================================================
+imageInput.onchange=()=>{
+  const f=imageInput.files[0];
+  if(!f){showImagePreview(existingImageUrlInput.value);return}
+  if(!f.type.startsWith("image/")){eventFormMessage.textContent="Please choose an image file.";imageInput.value="";return}
+  if(f.size>MAX_IMAGE_SIZE){eventFormMessage.textContent="Image must be 10 MB or smaller.";imageInput.value="";return}
+  removeExistingImage=false;eventFormMessage.textContent="";showImagePreview(URL.createObjectURL(f));
+};
+removeImageButton.onclick=()=>{removeExistingImage=true;imageInput.value="";showImagePreview("")};
 
-function openEditEventModal(
-    eventId
-) {
+async function uploadImage(file){
+  const path=filePath(file);
+  const {error}=await supabaseClient.storage.from(BUCKET).upload(path,file,{cacheControl:"3600",upsert:false,contentType:file.type});
+  if(error)throw error;
+  const {data}=supabaseClient.storage.from(BUCKET).getPublicUrl(path);
+  return {url:data.publicUrl,path};
+}
+async function deleteImage(url){const p=storagePath(url);if(p)await supabaseClient.storage.from(BUCKET).remove([p])}
 
-    const selected =
-        adminEvents.find(
-            event =>
-                event.id === eventId
-        );
+eventForm.onsubmit=async e=>{
+  e.preventDefault();
+  const id=$("event-id").value,title=$("event-title").value.trim(),eventDate=$("event-date").value;
+  if(!title||!eventDate){eventFormMessage.textContent="Title and date are required.";return}
+  let published=$("event-published").checked;const status=$("event-status").value;if(status==="draft")published=false;
+  const newFile=imageInput.files[0]||null,oldUrl=existingImageUrlInput.value||null;
+  saveEventButton.disabled=true;saveEventButton.textContent=newFile?"Uploading...":"Saving...";eventFormMessage.textContent="";
+  let uploaded=null;
+  try{
+    let imageUrl=oldUrl;
+    if(newFile){uploaded=await uploadImage(newFile);imageUrl=uploaded.url}
+    else if(removeExistingImage)imageUrl=null;
 
+    const payload={
+      title,event_date:eventDate,location:$("event-location").value.trim()||null,description:$("event-description").value.trim()||null,
+      entry_type:entryTypeInput.value,ticket_url:ticketUrlInput.value.trim()||null,video_url:$("event-video-url").value.trim()||null,
+      image_url:imageUrl,status,published,updated_at:new Date().toISOString()
+    };
+    const result=id?await supabaseClient.from("events").update(payload).eq("id",id):await supabaseClient.from("events").insert([payload]);
+    if(result.error)throw result.error;
 
-    if (!selected) {
-        return;
-    }
+    if(newFile&&oldUrl)await deleteImage(oldUrl);
+    if(removeExistingImage&&oldUrl)await deleteImage(oldUrl);
 
+    eventFormMessage.textContent=id?"Event updated.":"Event created.";await loadAdminEvents();setTimeout(closeModal,500);
+  }catch(err){
+    console.error(err);if(uploaded)await supabaseClient.storage.from(BUCKET).remove([uploaded.path]);
+    eventFormMessage.textContent=err.message||"Unable to save event.";
+  }finally{saveEventButton.disabled=false;saveEventButton.textContent=id?"Save Changes":"Publish Event"}
+};
 
-    document.getElementById(
-        "event-id"
-    ).value =
-        selected.id;
-
-
-    document.getElementById(
-        "event-title"
-    ).value =
-        selected.title || "";
-
-
-    document.getElementById(
-        "event-date"
-    ).value =
-        selected.event_date || "";
-
-
-    document.getElementById(
-        "event-location"
-    ).value =
-        selected.location || "";
-
-
-    document.getElementById(
-        "event-description"
-    ).value =
-        selected.description || "";
-
-
-    document.getElementById(
-        "event-ticket-url"
-    ).value =
-        selected.ticket_url || "";
-
-
-    document.getElementById(
-        "event-status"
-    ).value =
-        selected.status || "upcoming";
-
-
-    document.getElementById(
-        "event-published"
-    ).checked =
-        !!selected.published;
-
-
-    eventFormHeading.textContent =
-        "Edit Event";
-
-
-    saveEventButton.textContent =
-        "Save Changes";
-
-
-    eventFormMessage.textContent =
-        "";
-
-
-    eventEditorModal.classList.add(
-        "active"
-    );
+async function quickUpdate(id,changes){
+  const {error}=await supabaseClient.from("events").update({...changes,updated_at:new Date().toISOString()}).eq("id",id);
+  if(error){alert(error.message||"Unable to update event.");return}
+  await loadAdminEvents();
 }
 
-
-// ======================================================
-// CLOSE MODAL
-// ======================================================
-
-function closeEventModal() {
-
-    eventEditorModal.classList.remove(
-        "active"
-    );
-}
-
-
-addEventButton.addEventListener(
-    "click",
-    openAddEventModal
-);
-
-
-overviewAddEventButton.addEventListener(
-    "click",
-    openAddEventModal
-);
-
-
-closeEventEditorButton.addEventListener(
-    "click",
-    closeEventModal
-);
-
-
-// ======================================================
-// SAVE EVENT
-// ======================================================
-
-eventForm.addEventListener(
-    "submit",
-    async event => {
-
-        event.preventDefault();
-
-
-        const id =
-            document.getElementById(
-                "event-id"
-            ).value;
-
-
-        const title =
-            document.getElementById(
-                "event-title"
-            ).value.trim();
-
-
-        const eventDate =
-            document.getElementById(
-                "event-date"
-            ).value;
-
-
-        const location =
-            document.getElementById(
-                "event-location"
-            ).value.trim();
-
-
-        const description =
-            document.getElementById(
-                "event-description"
-            ).value.trim();
-
-
-        const ticketUrl =
-            document.getElementById(
-                "event-ticket-url"
-            ).value.trim();
-
-
-        const status =
-            document.getElementById(
-                "event-status"
-            ).value;
-
-
-        let published =
-            document.getElementById(
-                "event-published"
-            ).checked;
-
-
-        if (status === "draft") {
-            published = false;
-        }
-
-
-        if (!title || !eventDate) {
-
-            eventFormMessage.textContent =
-                "Title and date are required.";
-
-            return;
-        }
-
-
-        const payload = {
-
-            title,
-
-            event_date:
-                eventDate,
-
-            location:
-                location || null,
-
-            description:
-                description || null,
-
-            ticket_url:
-                ticketUrl || null,
-
-            status,
-
-            published,
-
-            updated_at:
-                new Date().toISOString()
-        };
-
-
-        saveEventButton.disabled =
-            true;
-
-
-        saveEventButton.textContent =
-            "Saving...";
-
-
-        try {
-
-            let result;
-
-
-            if (id) {
-
-                result =
-                    await supabaseClient
-                        .from("events")
-                        .update(payload)
-                        .eq(
-                            "id",
-                            id
-                        );
-
-            } else {
-
-                result =
-                    await supabaseClient
-                        .from("events")
-                        .insert([
-                            payload
-                        ]);
-            }
-
-
-            if (result.error) {
-                throw result.error;
-            }
-
-
-            eventFormMessage.textContent =
-                id
-                    ? "Event updated."
-                    : "Event created.";
-
-
-            await loadAdminEvents();
-
-
-            setTimeout(
-                closeEventModal,
-                500
-            );
-
-
-        } catch (error) {
-
-            console.error(
-                "Save error:",
-                error
-            );
-
-
-            eventFormMessage.textContent =
-                error.message ||
-                "Unable to save event.";
-
-
-        } finally {
-
-            saveEventButton.disabled =
-                false;
-
-
-            saveEventButton.textContent =
-                id
-                    ? "Save Changes"
-                    : "Publish Event";
-        }
-    }
-);
-
-
-// ======================================================
-// QUICK UPDATE
-// ======================================================
-
-async function updateEvent(
-    id,
-    changes
-) {
-
-    const {
-        error
-    } =
-        await supabaseClient
-            .from("events")
-            .update({
-                ...changes,
-
-                updated_at:
-                    new Date().toISOString()
-            })
-            .eq(
-                "id",
-                id
-            );
-
-
-    if (error) {
-
-        alert(
-            error.message ||
-            "Unable to update event."
-        );
-
-        return;
-    }
-
-
-    await loadAdminEvents();
-}
-
-
-// ======================================================
-// EVENT ACTIONS
-// ======================================================
-
-adminEventsList.addEventListener(
-    "click",
-    async event => {
-
-        const button =
-            event.target.closest(
-                "[data-action]"
-            );
-
-
-        if (!button) {
-            return;
-        }
-
-
-        const id =
-            button.dataset.id;
-
-        const action =
-            button.dataset.action;
-
-
-        const selected =
-            adminEvents.find(
-                item =>
-                    item.id === id
-            );
-
-
-        if (!selected) {
-            return;
-        }
-
-
-        if (action === "edit") {
-
-            openEditEventModal(
-                id
-            );
-
-            return;
-        }
-
-
-        if (action === "postpone") {
-
-            await updateEvent(
-                id,
-                {
-                    status:
-                        selected.status ===
-                        "postponed"
-                            ? "upcoming"
-                            : "postponed"
-                }
-            );
-
-            return;
-        }
-
-
-        if (action === "cancel") {
-
-            if (
-                !confirm(
-                    `Cancel "${selected.title}"?`
-                )
-            ) {
-                return;
-            }
-
-
-            await updateEvent(
-                id,
-                {
-                    status:
-                        "cancelled"
-                }
-            );
-
-            return;
-        }
-
-
-        if (action === "publish") {
-
-            let status =
-                selected.status;
-
-
-            if (
-                !selected.published &&
-                status === "draft"
-            ) {
-                status =
-                    "upcoming";
-            }
-
-
-            await updateEvent(
-                id,
-                {
-                    published:
-                        !selected.published,
-
-                    status
-                }
-            );
-
-            return;
-        }
-
-
-        if (action === "delete") {
-
-            if (
-                !confirm(
-                    `Permanently delete "${selected.title}"?`
-                )
-            ) {
-                return;
-            }
-
-
-            const {
-                error
-            } =
-                await supabaseClient
-                    .from("events")
-                    .delete()
-                    .eq(
-                        "id",
-                        id
-                    );
-
-
-            if (error) {
-
-                alert(
-                    error.message ||
-                    "Unable to delete event."
-                );
-
-                return;
-            }
-
-
-            await loadAdminEvents();
-        }
-    }
-);
-
-
-// ======================================================
-// MODAL BACKGROUND / ESC
-// ======================================================
-
-eventEditorModal.addEventListener(
-    "click",
-    event => {
-
-        if (
-            event.target ===
-            eventEditorModal
-        ) {
-            closeEventModal();
-        }
-    }
-);
-
-
-document.addEventListener(
-    "keydown",
-    event => {
-
-        if (event.key === "Escape") {
-            closeEventModal();
-        }
-    }
-);
-
-
-// ======================================================
-// LOGOUT
-// ======================================================
-
-logoutButton.addEventListener(
-    "click",
-    async () => {
-
-        await supabaseClient
-            .auth
-            .signOut();
-
-
-        // /admin/dashboard/ -> /admin/
-        window.location.href =
-            "../";
-    }
-);
-
-
-// ======================================================
-// YEAR
-// ======================================================
-
-const yearElement =
-    document.getElementById(
-        "admin-year"
-    );
-
-
-if (yearElement) {
-
-    yearElement.textContent =
-        new Date().getFullYear();
-}
-
-
-// ======================================================
-// START
-// ======================================================
-
-async function startDashboard() {
-
-    const admin =
-        await requireAdmin();
-
-
-    if (!admin) {
-        return;
-    }
-
-
-    await Promise.all([
-        loadAdminEvents(),
-        loadSubscribers()
-    ]);
-}
-
-
-startDashboard();
+adminEventsList.onclick=async e=>{
+  const b=e.target.closest("[data-action]");if(!b)return;
+  const item=adminEvents.find(x=>x.id===b.dataset.id);if(!item)return;
+  if(b.dataset.action==="edit")return openEdit(item.id);
+  if(b.dataset.action==="postpone")return quickUpdate(item.id,{status:item.status==="postponed"?"upcoming":"postponed"});
+  if(b.dataset.action==="cancel"){if(confirm(`Cancel "${item.title}"?`))return quickUpdate(item.id,{status:"cancelled"});return}
+  if(b.dataset.action==="publish")return quickUpdate(item.id,{published:!item.published,status:(!item.published&&item.status==="draft")?"upcoming":item.status});
+  if(b.dataset.action==="delete"){
+    if(!confirm(`Permanently delete "${item.title}"?`))return;
+    const {error}=await supabaseClient.from("events").delete().eq("id",item.id);
+    if(error){alert(error.message);return}
+    if(item.image_url)await deleteImage(item.image_url);await loadAdminEvents();
+  }
+};
+
+logoutButton.onclick=async()=>{await supabaseClient.auth.signOut();location.href="../"};
+$("admin-year").textContent=new Date().getFullYear();
+
+(async()=>{if(await requireAdmin())await Promise.all([loadAdminEvents(),loadSubscribers()])})();
