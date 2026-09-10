@@ -1,54 +1,860 @@
-:root{
-  --bg-light:#dcdcdc;--text-dark:#111;--date-gray:#767676;
-  --bg-dark:#090909;--text-light:#e5e5e5;--border-dark:#333;
-  --font-serif:"Times New Roman",Times,Georgia,serif;
-  --font-mono:"Courier New",Courier,monospace;
+:root {
+    --bg-light: #dcdcdc;
+    --text-dark: #111111;
+    --date-gray: #767676;
+
+    --bg-dark: #090909;
+    --text-light: #e5e5e5;
+    --border-dark: #333333;
+
+    --font-serif: "Times New Roman", Times, Georgia, serif;
+    --font-mono: "Courier New", Courier, monospace;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg-light);color:var(--text-dark);font-family:var(--font-serif);min-height:100vh}
-header{position:fixed;top:0;left:0;width:100%;padding:20px 24px;display:flex;justify-content:space-between;align-items:flex-start;background:inherit;z-index:100}
-.brand-title{color:inherit;text-decoration:none;font-size:1.1rem}
-.nav-controls{display:flex;flex-direction:column;align-items:flex-end;gap:12px}
-.nav-btn{border:none;background:none;color:inherit;cursor:pointer;font-family:var(--font-serif);font-size:1.25rem;opacity:.75}
-.nav-btn:hover{opacity:1}
-main{max-width:800px;margin:0 auto;padding:110px 24px 100px}
-.page-section{display:none}.page-section.active{display:block}
-.section-heading{margin-bottom:42px;font-family:var(--font-mono);font-size:.75rem;letter-spacing:.1em;color:var(--date-gray)}
-.feed-list{list-style:none;display:flex;flex-direction:column;gap:34px}
-.feed-item{cursor:pointer}
-.feed-date{display:block;margin-bottom:5px;color:var(--date-gray);font-size:.9rem}
-.feed-title{font-size:1.18rem;line-height:1.35}
-.feed-item:hover .feed-title{opacity:.55;text-decoration:underline}
-.feed-location{margin-top:5px;color:var(--date-gray);font-size:.87rem}
-.feed-entry-type,.event-status{display:inline-block;margin-top:7px;font-family:var(--font-mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--date-gray)}
-.strikethrough{text-decoration:line-through}
-footer{position:fixed;bottom:0;left:0;width:100%;padding:16px 24px;display:flex;justify-content:space-between;background:inherit;font-size:.85rem;z-index:90}
-.footer-links{display:flex;gap:14px}.footer-links a{color:inherit;text-decoration:none}
-.modal-overlay{position:fixed;inset:0;padding:24px;display:none;justify-content:center;align-items:center;background:rgba(0,0,0,.88);backdrop-filter:blur(5px);z-index:200}
-.modal-overlay.active{display:flex}
-.modal-content{position:relative;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;padding:38px 28px 30px;background:var(--bg-dark);color:var(--text-light);border:1px solid var(--border-dark)}
-.modal-close{position:absolute;top:15px;right:15px;border:none;background:none;color:var(--text-light);cursor:pointer;font-family:var(--font-mono);font-size:.8rem;z-index:2}
-.event-modal-image-wrap{width:100%;margin:8px 0 24px;background:#111;border:1px solid #252525}
-.event-modal-image-wrap[hidden]{display:none}
-.event-modal-image-wrap img{display:block;width:100%;max-height:520px;object-fit:contain}
-.event-modal-date{margin-bottom:8px;color:var(--date-gray);font-size:.85rem}
-.event-entry-badge{display:inline-block;margin-bottom:12px;color:#999;font-family:var(--font-mono);font-size:.7rem;letter-spacing:.08em}
-.event-modal-title{margin-bottom:10px;font-size:1.5rem;font-weight:normal}
-.event-modal-location{margin-bottom:18px;color:#8d8d8d;font-size:.85rem;font-family:var(--font-mono)}
-.event-modal-body{margin-bottom:26px;color:#c7c7c7;font-size:.96rem;line-height:1.55;white-space:pre-wrap}
-.event-modal-actions{display:flex;flex-wrap:wrap;gap:10px}
-.event-modal-link{display:inline-block;padding:9px 15px;border:1px solid #555;color:#fff;text-decoration:none;font-size:.85rem}
-.event-modal-link:hover{background:#fff;color:#000}
-.event-modal-link[hidden]{display:none}
-.auth-header-text{margin-bottom:28px;text-align:center;font-size:1rem;line-height:1.4}
-.form-group{margin-bottom:12px}
-.form-input{width:100%;padding:11px 12px;background:transparent;border:1px solid #333;outline:none;color:#fff;font-family:var(--font-mono);font-size:.85rem}
-.form-submit{width:100%;margin-top:12px;padding:14px;border:none;background:none;color:#fff;cursor:pointer;font-family:var(--font-serif);font-size:1rem}
-.form-submit:disabled{opacity:.5}
-.form-message{margin-top:14px;text-align:center;font-family:var(--font-mono);font-size:.75rem;color:#aaa}
-.empty-state{color:var(--date-gray);font-size:1rem}
-@media(max-width:600px){
-  header{padding:18px}main{padding:100px 18px 90px}footer{padding:14px 18px}
-  .modal-overlay{padding:14px}.modal-content{padding:38px 20px 28px}
+
+
+/* =========================================
+   RESET
+========================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+    min-height: 100vh;
+
+    background: var(--bg-light);
+    color: var(--text-dark);
+
+    font-family: var(--font-serif);
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+header {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+
+    padding: 22px 36px;
+
+    display: flex;
+
+    justify-content: space-between;
+    align-items: flex-start;
+
+    background: var(--bg-light);
+
+    z-index: 100;
+}
+
+
+.brand-title {
+    color: var(--text-dark);
+
+    text-decoration: none;
+
+    font-size: 1.8rem;
+
+    font-weight: normal;
+
+    line-height: 1;
+}
+
+
+/* =========================================
+   RIGHT NAVIGATION
+========================================= */
+
+.nav-controls {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 28px;
+}
+
+
+.nav-btn {
+    appearance: none;
+    -webkit-appearance: none;
+
+    display: block;
+
+    width: 34px;
+    height: 34px;
+
+    padding: 0;
+    margin: 0;
+
+    border: none;
+
+    background: transparent;
+
+    color: var(--text-dark);
+
+    font-family: var(--font-serif);
+
+    font-size: 1.7rem;
+
+    line-height: 34px;
+
+    text-align: center;
+
+    cursor: pointer;
+
+    opacity: 0.7;
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.nav-btn:hover {
+    opacity: 1;
+}
+
+
+.nav-btn:active {
+    transform: scale(0.92);
+}
+
+
+/* =========================================
+   MAIN
+========================================= */
+
+main {
+    width: 100%;
+
+    max-width: 1100px;
+
+    margin: 0 auto;
+
+    /*
+        Important:
+        content starts below fixed header/nav
+    */
+
+    padding:
+        230px
+        36px
+        120px;
+}
+
+
+/* =========================================
+   PAGE SECTIONS
+========================================= */
+
+.page-section {
+    display: none;
+}
+
+
+.page-section.active {
+    display: block;
+}
+
+
+.section-heading {
+    margin-bottom: 42px;
+
+    color: var(--date-gray);
+
+    font-family: var(--font-mono);
+
+    font-size: 0.75rem;
+
+    letter-spacing: 0.1em;
+}
+
+
+/* =========================================
+   EVENT FEED
+========================================= */
+
+.feed-list {
+    list-style: none;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 66px;
+}
+
+
+.feed-item {
+    cursor: pointer;
+}
+
+
+.feed-date {
+    display: block;
+
+    margin-bottom: 16px;
+
+    color: var(--date-gray);
+
+    font-size: 1.15rem;
+
+    line-height: 1.2;
+}
+
+
+.feed-title {
+    color: var(--text-dark);
+
+    font-size: 1.75rem;
+
+    font-weight: normal;
+
+    line-height: 1.15;
+
+    letter-spacing: -0.02em;
+
+    transition: opacity 0.2s ease;
+}
+
+
+.feed-item:hover .feed-title {
+    opacity: 0.55;
+
+    text-decoration: underline;
+}
+
+
+.feed-location {
+    margin-top: 14px;
+
+    color: var(--date-gray);
+
+    font-size: 1.1rem;
+
+    line-height: 1.3;
+}
+
+
+/* =========================================
+   EVENT TYPE / STATUS
+========================================= */
+
+.feed-entry-type,
+.event-status {
+    display: inline-block;
+
+    margin-top: 22px;
+
+    color: var(--date-gray);
+
+    font-family: var(--font-mono);
+
+    font-size: 0.72rem;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.12em;
+}
+
+
+.strikethrough {
+    text-decoration: line-through;
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+footer {
+    position: fixed;
+
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+
+    padding: 18px 36px;
+
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    background: var(--bg-light);
+
+    color: var(--text-dark);
+
+    font-size: 1rem;
+
+    z-index: 90;
+}
+
+
+.footer-links {
+    display: flex;
+
+    gap: 22px;
+}
+
+
+.footer-links a {
+    color: inherit;
+
+    text-decoration: none;
+}
+
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================
+   MODAL BACKGROUND
+========================================= */
+
+.modal-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 24px;
+
+    background: rgba(0, 0, 0, 0.88);
+
+    backdrop-filter: blur(5px);
+
+    z-index: 200;
+}
+
+
+.modal-overlay.active {
+    display: flex;
+}
+
+
+/* =========================================
+   MODAL
+========================================= */
+
+.modal-content {
+    position: relative;
+
+    width: 100%;
+
+    max-width: 500px;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    padding: 44px 30px 34px;
+
+    background: var(--bg-dark);
+
+    color: var(--text-light);
+
+    border: 1px solid var(--border-dark);
+}
+
+
+/* =========================================
+   CLOSE BUTTON
+========================================= */
+
+.modal-close {
+    appearance: none;
+    -webkit-appearance: none;
+
+    position: absolute;
+
+    top: 16px;
+    right: 16px;
+
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+
+    color: var(--text-light);
+
+    cursor: pointer;
+
+    font-family: var(--font-mono);
+
+    font-size: 0.8rem;
+
+    z-index: 2;
+}
+
+
+.modal-close:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================
+   EVENT IMAGE
+========================================= */
+
+.event-modal-image-wrap {
+    width: 100%;
+
+    margin:
+        8px
+        0
+        26px;
+
+    background: #111111;
+
+    border: 1px solid #252525;
+}
+
+
+.event-modal-image-wrap[hidden] {
+    display: none;
+}
+
+
+.event-modal-image-wrap img {
+    display: block;
+
+    width: 100%;
+
+    max-height: 560px;
+
+    object-fit: contain;
+}
+
+
+/* =========================================
+   EVENT MODAL CONTENT
+========================================= */
+
+.event-modal-date {
+    margin-bottom: 10px;
+
+    color: #8a8a8a;
+
+    font-size: 0.9rem;
+}
+
+
+.event-entry-badge {
+    display: inline-block;
+
+    margin-bottom: 14px;
+
+    color: #999999;
+
+    font-family: var(--font-mono);
+
+    font-size: 0.7rem;
+
+    letter-spacing: 0.1em;
+}
+
+
+.event-modal-title {
+    margin-bottom: 12px;
+
+    font-size: 1.7rem;
+
+    font-weight: normal;
+
+    line-height: 1.15;
+}
+
+
+.event-modal-location {
+    margin-bottom: 20px;
+
+    color: #909090;
+
+    font-family: var(--font-mono);
+
+    font-size: 0.8rem;
+
+    line-height: 1.4;
+}
+
+
+.event-modal-body {
+    margin-bottom: 28px;
+
+    color: #c7c7c7;
+
+    font-size: 1rem;
+
+    line-height: 1.55;
+
+    white-space: pre-wrap;
+}
+
+
+/* =========================================
+   EVENT MODAL BUTTONS
+========================================= */
+
+.event-modal-actions {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+}
+
+
+.event-modal-link {
+    display: inline-block;
+
+    padding: 10px 16px;
+
+    border: 1px solid #555555;
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    font-size: 0.85rem;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.event-modal-link:hover {
+    background: #ffffff;
+
+    color: #000000;
+}
+
+
+.event-modal-link[hidden] {
+    display: none;
+}
+
+
+/* =========================================
+   JOIN NETWORK
+========================================= */
+
+.auth-header-text {
+    margin-bottom: 30px;
+
+    text-align: center;
+
+    font-size: 1rem;
+
+    line-height: 1.5;
+}
+
+
+.form-group {
+    margin-bottom: 13px;
+}
+
+
+.form-input {
+    width: 100%;
+
+    padding: 12px 13px;
+
+    background: transparent;
+
+    border: 1px solid #333333;
+
+    outline: none;
+
+    color: #ffffff;
+
+    font-family: var(--font-mono);
+
+    font-size: 0.85rem;
+
+    transition: border-color 0.2s ease;
+}
+
+
+.form-input::placeholder {
+    color: #777777;
+}
+
+
+.form-input:focus {
+    border-color: #888888;
+}
+
+
+.form-submit {
+    width: 100%;
+
+    margin-top: 12px;
+
+    padding: 14px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #ffffff;
+
+    cursor: pointer;
+
+    font-family: var(--font-serif);
+
+    font-size: 1rem;
+}
+
+
+.form-submit:hover {
+    text-decoration: underline;
+}
+
+
+.form-submit:disabled {
+    opacity: 0.5;
+
+    cursor: not-allowed;
+}
+
+
+.form-message {
+    margin-top: 14px;
+
+    text-align: center;
+
+    color: #aaaaaa;
+
+    font-family: var(--font-mono);
+
+    font-size: 0.75rem;
+}
+
+
+/* =========================================
+   EMPTY STATE
+========================================= */
+
+.empty-state {
+    color: var(--date-gray);
+
+    font-size: 1rem;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 900px) {
+
+    main {
+        padding-top: 220px;
+    }
+
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    header {
+        padding:
+            28px
+            36px
+            20px;
+
+        background: var(--bg-light);
+    }
+
+
+    .brand-title {
+        font-size: 1.55rem;
+
+        line-height: 1;
+    }
+
+
+    /*
+        Keep ○ △ + vertical,
+        but remove browser button spacing.
+    */
+
+    .nav-controls {
+        gap: 26px;
+    }
+
+
+    .nav-btn {
+        width: 28px;
+        height: 28px;
+
+        padding: 0;
+        margin: 0;
+
+        font-size: 1.55rem;
+
+        line-height: 28px;
+    }
+
+
+    /*
+        FIX FOR YOUR SCREENSHOT
+
+        The header is fixed, so the content
+        needs enough room above it.
+
+        This prevents the first event from
+        being covered/cut off.
+    */
+
+    main {
+        max-width: none;
+
+        padding:
+            230px
+            36px
+            110px;
+    }
+
+
+    .feed-list {
+        gap: 70px;
+    }
+
+
+    .feed-date {
+        margin-bottom: 18px;
+
+        font-size: 1.15rem;
+    }
+
+
+    .feed-title {
+        font-size: 1.7rem;
+
+        line-height: 1.12;
+    }
+
+
+    .feed-location {
+        margin-top: 16px;
+
+        font-size: 1.08rem;
+
+        line-height: 1.35;
+    }
+
+
+    .feed-entry-type,
+    .event-status {
+        margin-top: 22px;
+
+        font-size: 0.72rem;
+    }
+
+
+    footer {
+        padding:
+            18px
+            36px;
+
+        font-size: 1rem;
+    }
+
+
+    .footer-links {
+        gap: 22px;
+    }
+
+
+    .modal-overlay {
+        padding: 14px;
+    }
+
+
+    .modal-content {
+        max-width: 100%;
+
+        padding:
+            42px
+            20px
+            28px;
+    }
+
+
+    .event-modal-title {
+        font-size: 1.5rem;
+    }
+
+}
+
+
+/* =========================================
+   VERY SMALL PHONES
+========================================= */
+
+@media (max-width: 380px) {
+
+    header {
+        padding-left: 22px;
+        padding-right: 22px;
+    }
+
+
+    main {
+        padding-left: 22px;
+        padding-right: 22px;
+    }
+
+
+    footer {
+        padding-left: 22px;
+        padding-right: 22px;
+
+        font-size: 0.85rem;
+    }
+
+
+    .brand-title {
+        font-size: 1.4rem;
+    }
+
+
+    .feed-title {
+        font-size: 1.5rem;
+    }
+
 }
