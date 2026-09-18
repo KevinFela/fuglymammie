@@ -3,12 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fuglymammie</title>
-  <meta name="description" content="Official Fuglymammie website and Gig Guide.">
+  <title>Fuglymammie — MC & Event Promoter</title>
+  <meta name="description" content="Official Fuglymammie website — MC, host and event promoter.">
   <link rel="icon" type="image/png" href="/favicon.png">
+  <script>
+    try {
+      if (sessionStorage.getItem("fm-purple-intro-seen") === "1") {
+        document.documentElement.classList.add("fm-intro-seen");
+      }
+    } catch (error) {}
+  </script>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+  <section class="purple-awareness" id="purple-awareness" aria-label="Gender-based violence awareness message">
+    <div class="purple-awareness__grain" aria-hidden="true"></div>
+    <div class="purple-awareness__top">FUGLY MAMMIE / AWARENESS</div>
+
+    <div class="purple-awareness__content">
+      <p class="purple-awareness__kicker">ENOUGH IS ENOUGH.</p>
+      <h1>STOP KILLING<br>OUR SISTERS.</h1>
+      <p class="purple-awareness__message">Stand against gender-based violence and femicide.</p>
+      <p class="purple-awareness__signature">FUGLY MAMMIE TURNS PURPLE</p>
+      <button class="purple-awareness__enter" id="purple-awareness-enter" type="button">ENTER SITE →</button>
+    </div>
+
+    <div class="purple-awareness__footer">
+      <span>NO MORE SILENCE.</span>
+      <span>NO MORE NAMES.</span>
+    </div>
+    <div class="purple-awareness__timer" aria-hidden="true"><span></span></div>
+  </section>
   <header>
     <a href="/" class="brand-title" id="brand-link">Fuglymammie</a>
     <div class="nav-controls">

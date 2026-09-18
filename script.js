@@ -1,3 +1,51 @@
+
+
+// ======================================================
+// FUGLY MAMMIE TURNS PURPLE — SESSION INTRO
+// ======================================================
+const purpleAwareness = document.getElementById("purple-awareness");
+const purpleAwarenessEnter = document.getElementById("purple-awareness-enter");
+
+if (purpleAwareness) {
+  let purpleIntroSeen = false;
+
+  try {
+    purpleIntroSeen = sessionStorage.getItem("fm-purple-intro-seen") === "1";
+  } catch (error) {}
+
+  if (purpleIntroSeen) {
+    purpleAwareness.remove();
+  } else {
+    document.body.classList.add("fm-intro-lock");
+
+    let purpleIntroClosed = false;
+    let purpleIntroTimer;
+
+    const closePurpleAwareness = () => {
+      if (purpleIntroClosed) return;
+      purpleIntroClosed = true;
+
+      try {
+        sessionStorage.setItem("fm-purple-intro-seen", "1");
+      } catch (error) {}
+
+      clearTimeout(purpleIntroTimer);
+      purpleAwareness.classList.add("is-leaving");
+      document.body.classList.remove("fm-intro-lock");
+
+      window.setTimeout(() => {
+        purpleAwareness.remove();
+      }, 720);
+    };
+
+    if (purpleAwarenessEnter) {
+      purpleAwarenessEnter.addEventListener("click", closePurpleAwareness);
+    }
+
+    purpleIntroTimer = window.setTimeout(closePurpleAwareness, 4500);
+  }
+}
+
 const SUPABASE_URL="https://kdrenkxjhhupuvjhpdrk.supabase.co";
 const SUPABASE_KEY="sb_publishable_u-kQrZgBjM35l7xVeBaaCw_sm2vVHXq";
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);

@@ -7,3 +7,16 @@ This version supports:
 - Event poster/image upload to Supabase bucket: event-media
 - Optional YouTube / TikTok / Instagram video links
 - Public event modal showing poster, entry type, optional action button and optional Watch Video button
+
+
+PURPLE AWARENESS INTRO
+----------------------
+The homepage now opens with a full-screen purple GBVF awareness message:
+"STOP KILLING OUR SISTERS."
+
+Behaviour:
+- Automatically fades into the site after 4.5 seconds.
+- Visitor can choose ENTER SITE immediately.
+- Appears once per browser session using sessionStorage.
+- No database changes required.
+- The existing Fuglymammie feed, events, network form and admin CMS are unchanged.
