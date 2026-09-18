@@ -10,7 +10,7 @@ if (purpleAwareness) {
   let purpleIntroSeen = false;
 
   try {
-    purpleIntroSeen = sessionStorage.getItem("fm-purple-intro-seen") === "1";
+    purpleIntroSeen = sessionStorage.getItem("fm-purple-intro-seen-v2") === "1";
   } catch (error) {}
 
   if (purpleIntroSeen) {
@@ -26,15 +26,20 @@ if (purpleAwareness) {
       purpleIntroClosed = true;
 
       try {
-        sessionStorage.setItem("fm-purple-intro-seen", "1");
+        sessionStorage.setItem("fm-purple-intro-seen-v2", "1");
       } catch (error) {}
 
       clearTimeout(purpleIntroTimer);
       purpleAwareness.classList.add("is-leaving");
       document.body.classList.remove("fm-intro-lock");
 
+      // Mobile Safari can restore a previous scroll position while a full-screen
+      // intro is closing. Always reveal the homepage from its true top edge.
+      window.scrollTo(0, 0);
+
       window.setTimeout(() => {
         purpleAwareness.remove();
+        window.scrollTo(0, 0);
       }, 720);
     };
 

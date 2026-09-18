@@ -20,3 +20,12 @@ Behaviour:
 - Appears once per browser session using sessionStorage.
 - No database changes required.
 - The existing Fuglymammie feed, events, network form and admin CMS are unchanged.
+
+MOBILE FIX (iPhone/Safari)
+--------------------------
+- Prevents Safari text auto-enlargement.
+- Fixes the fixed header overlapping/cutting off the first event.
+- Keeps the existing Fuglymammie typography and feed proportions.
+- Makes the purple awareness intro fit a 414px-wide iPhone viewport cleanly.
+- Resets the page to the top when the intro fades out.
+- Uses a new one-per-session intro key so the revised intro appears once after deployment.

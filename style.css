@@ -5,14 +5,31 @@
   --font-mono:"Courier New",Courier,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg-light);color:var(--text-dark);font-family:var(--font-serif);min-height:100vh}
+html{
+  scroll-behavior:smooth;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+body{
+  background:var(--bg-light);
+  color:var(--text-dark);
+  font-family:var(--font-serif);
+  min-height:100vh;
+  min-height:100svh;
+  overflow-x:hidden;
+}
 header{position:fixed;top:0;left:0;width:100%;padding:20px 24px;display:flex;justify-content:space-between;align-items:flex-start;background:inherit;z-index:100}
 .brand-title{color:inherit;text-decoration:none;font-size:1.1rem}
 .nav-controls{display:flex;flex-direction:column;align-items:flex-end;gap:12px}
 .nav-btn{border:none;background:none;color:inherit;cursor:pointer;font-family:var(--font-serif);font-size:1.25rem;opacity:.75}
 .nav-btn:hover{opacity:1}
-main{max-width:800px;margin:0 auto;padding:110px 24px 100px}
+main{
+  max-width:800px;
+  margin:0 auto;
+  /* The right-hand ○ △ + stack makes the fixed header ~130px tall.
+     Keep the first event completely below it instead of hiding its top. */
+  padding:150px 24px 100px;
+}
 .page-section{display:none}.page-section.active{display:block}
 .section-heading{margin-bottom:42px;font-family:var(--font-mono);font-size:.75rem;letter-spacing:.1em;color:var(--date-gray)}
 .feed-list{list-style:none;display:flex;flex-direction:column;gap:34px}
@@ -49,7 +66,16 @@ footer{position:fixed;bottom:0;left:0;width:100%;padding:16px 24px;display:flex;
 .form-message{margin-top:14px;text-align:center;font-family:var(--font-mono);font-size:.75rem;color:#aaa}
 .empty-state{color:var(--date-gray);font-size:1rem}
 @media(max-width:600px){
-  header{padding:18px}main{padding:100px 18px 90px}footer{padding:14px 18px}
+  header{padding:18px}
+  main{padding:145px 18px 96px}
+  footer{padding:14px 18px}
+  .brand-title{font-size:1.08rem}
+  .nav-btn{font-size:1.22rem}
+  .feed-date{font-size:.86rem}
+  .feed-title{font-size:1.12rem;line-height:1.32}
+  .feed-location{font-size:.84rem}
+  .feed-entry-type,.event-status{font-size:.64rem}
+
   .modal-overlay{padding:14px}.modal-content{padding:38px 20px 28px}
 }
 
@@ -73,7 +99,8 @@ body.fm-intro-lock{overflow:hidden}
   z-index:9999;
   display:grid;
   grid-template-rows:auto 1fr auto;
-  min-height:100dvh;
+  height:100svh;
+  min-height:100svh;
   padding:22px 24px 26px;
   overflow:hidden;
   background:var(--fm-purple);
@@ -135,7 +162,7 @@ body.fm-intro-lock{overflow:hidden}
   max-width:900px;
   margin:0;
   font-family:var(--font-serif);
-  font-size:clamp(3.35rem,10vw,8.8rem);
+  font-size:clamp(3.1rem,8.5vw,7.6rem);
   font-weight:400;
   line-height:.82;
   letter-spacing:-.055em;
@@ -201,9 +228,20 @@ body.fm-intro-lock{overflow:hidden}
 
 @media(max-width:600px){
   .purple-awareness{padding:18px 18px 22px}
-  .purple-awareness__content{padding:36px 0}
-  .purple-awareness h1{font-size:clamp(3.15rem,17vw,5.8rem)}
-  .purple-awareness__footer{font-size:.58rem;letter-spacing:.08em}
+  .purple-awareness__content{
+    width:min(100%,380px);
+    padding:24px 0 28px;
+  }
+  .purple-awareness__kicker{margin-bottom:14px;font-size:.66rem}
+  .purple-awareness h1{
+    font-size:clamp(2.85rem,13vw,4.15rem);
+    line-height:.88;
+    letter-spacing:-.045em;
+  }
+  .purple-awareness__message{margin-top:24px;font-size:1rem;max-width:330px}
+  .purple-awareness__signature{margin-top:18px;font-size:.68rem}
+  .purple-awareness__enter{margin-top:24px;font-size:.72rem}
+  .purple-awareness__footer{font-size:.55rem;letter-spacing:.07em}
   .purple-awareness__footer span:last-child{text-align:right}
 }
 
