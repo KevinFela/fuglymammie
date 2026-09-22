@@ -147,31 +147,63 @@ function youtubeEmbed(link){
   }catch{return null}
 }
 
-function postCard(p,open){
+function postCard(p){
   const img=safeURL(p.image_url),video=safeURL(p.video_url),embed=youtubeEmbed(p.video_url);
   const media=img?`<img class="post-cover" src="${escapeHTML(img)}" alt="${escapeHTML(p.title)}" loading="lazy">`:"";
-  const player=embed?`<div class="post-video"><iframe src="${escapeHTML(embed)}" title="${escapeHTML(p.title)} video" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`:
-    video?`<a class="post-video-link" href="${escapeHTML(video)}" target="_blank" rel="noopener noreferrer">Watch video ↗</a>`:"";
+  // Do not create any iframe while the post is collapsed. Create it only
+  // after a real click on the post so playback cannot start off-screen.
+  const player=embed?`<div class="post-video" data-youtube-embed="${escapeHTML(embed)}"></div>`:
+    video?`<a class="post-video-link" href="${escapeHTML(video)}" target="_blank" rel="noopener noreferrer">Watch video</a>`:"";
   const date=p.post_date?`${p.post_date.slice(2,4)}-${p.post_date.slice(5,7)}-${p.post_date.slice(8,10)}`:"";
   return `<li class="feed-item feed-post"><article>
-    <span class="feed-date">${escapeHTML(date)}</span>
-    <details ${open?"open":""}><summary class="post-heading">${escapeHTML(p.title)}</summary>
+    <details class="post-expander"><summary class="post-heading"><span class="feed-date">${escapeHTML(date)}</span><span class="post-title">${escapeHTML(p.title)}</span></summary>
       <div class="post-content">
+        ${player}${media}
         ${p.body?`<div class="post-body">${escapeHTML(p.body)}</div>`:""}
-        ${media}${player}
       </div>
     </details>
   </article></li>`;
 }
 
+function connectPostExpanders(){
+  const posts=[...feedContainer.querySelectorAll(".post-expander")];
+  posts.forEach(details=>details.addEventListener("toggle",()=>{
+    const player=details.querySelector(".post-video[data-youtube-embed]");
+    if(!details.open){
+      // Removing the iframe stops playback, not just hides it.
+      if(player)player.replaceChildren();
+      return;
+    }
+    // Show one expanded editorial post and play only one video at a time.
+    posts.forEach(other=>{
+      if(other!==details){
+        other.open=false;
+        other.querySelector(".post-video[data-youtube-embed]")?.replaceChildren();
+      }
+    });
+    if(!player||player.querySelector("iframe"))return;
+    const base=player.dataset.youtubeEmbed;
+    // It comes only from the validated, 11-character YouTube ID above.
+    if(!base?.startsWith("https://www.youtube-nocookie.com/embed/"))return;
+    const frame=document.createElement("iframe");
+    frame.src=base+"?autoplay=1&mute=1&playsinline=1&rel=0";
+    frame.title=(details.querySelector(".post-title")?.textContent||"Editorial post")+" video";
+    frame.setAttribute("allow","autoplay; encrypted-media; gyroscope; picture-in-picture; web-share");
+    frame.setAttribute("referrerpolicy","strict-origin-when-cross-origin");
+    frame.setAttribute("allowfullscreen","");
+    player.appendChild(frame);
+  }));
+}
+
 function renderFeed(){
   const entries=[
     ...eventsData.map(e=>({date:e.event_date||"",type:0,html:card(e)})),
-    ...postsData.map((p,i)=>({date:p.post_date||"",type:1,post:p,open:i===0})),
+    ...postsData.map(p=>({date:p.post_date||"",type:1,post:p})),
   ].sort((a,b)=>b.date.localeCompare(a.date)||b.type-a.type);
-  feedContainer.innerHTML=entries.length?entries.map(e=>e.post?postCard(e.post,e.open):e.html).join(""):
+  feedContainer.innerHTML=entries.length?entries.map(e=>e.post?postCard(e.post):e.html).join(""):
     '<li class="empty-state">No updates available.</li>';
   addEventListeners();
+  connectPostExpanders();
 }
 
 async function loadPosts(){

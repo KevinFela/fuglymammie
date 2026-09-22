@@ -40,3 +40,20 @@ SAFETY / LIMITATIONS
 - Existing event-media bucket and event/subscriber data are unchanged.
 - SQL is provided for manual application; this ZIP alone does not create
   your database table or storage bucket.
+
+CLICK-TO-PLAY EDITORIAL UPDATE
+------------------------------
+- Every editorial post begins collapsed, including the newest one.
+- Tap its date or title to expand the content inline, like the reference screenshot.
+- YouTube embeds are only inserted on expansion and request autoplay muted
+  (necessary for autoplay in most mobile browsers). Visitors can unmute.
+- Closing the post removes the player and stops playback. Opening a different
+  post also closes/stops the previous post.
+- Non-YouTube URLs are still links, not autoplay players.
+- Navigation uses plain text FEED / EVENTS / JOIN rather than icon symbols.
+- Existing event modals, Supabase connection, editor, events and subscribers
+  remain in place. No new SQL is required if EDITORIAL-SETUP.sql already ran.
+- Upload the ZIP's website files to the repository root, preserving admin/.
+  Do not re-run the SQL you previously ran successfully.
+- Browser restrictions may still block autoplay; YouTube embedding must be
+  enabled for the video by its uploader.
