@@ -56,6 +56,7 @@ const SUPABASE_KEY="sb_publishable_u-kQrZgBjM35l7xVeBaaCw_sm2vVHXq";
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 let eventsData=[];
+let postsData=[];
 
 const feedSection=document.getElementById("feed-section");
 const eventsSection=document.getElementById("events-section");
@@ -111,7 +112,8 @@ async function loadEvents(){
     renderFeed();renderUpcomingEvents();
   }catch(error){
     console.error(error);
-    feedContainer.innerHTML='<li class="empty-state">Unable to load updates right now.</li>';
+    // Preserve editorial posts even if the existing events query is offline.
+    renderFeed();
     upcomingContainer.innerHTML='<li class="empty-state">Unable to load upcoming events.</li>';
   }
 }
@@ -127,9 +129,58 @@ function card(e,upcoming=false){
   </li>`;
 }
 
+// Editorial posts and existing events share one date-ordered feed.
+// User-supplied text is always escaped; only recognised YouTube IDs enter iframes.
+function youtubeEmbed(link){
+  const u=safeURL(link);
+  if(!u)return null;
+  try{
+    const x=new URL(u),host=x.hostname.toLowerCase().replace(/^www\./,"").replace(/^m\./,"");
+    let id=null;
+    if(host==="youtu.be")id=x.pathname.split("/")[1];
+    else if(["youtube.com","youtube-nocookie.com"].includes(host)){
+      const segments=x.pathname.split("/").filter(Boolean);
+      id=segments[0]==="watch"?x.searchParams.get("v"):
+        (["embed","shorts","live"].includes(segments[0])?segments[1]:null);
+    }
+    return /^[A-Za-z0-9_-]{11}$/.test(id||"")?`https://www.youtube-nocookie.com/embed/${id}`:null;
+  }catch{return null}
+}
+
+function postCard(p,open){
+  const img=safeURL(p.image_url),video=safeURL(p.video_url),embed=youtubeEmbed(p.video_url);
+  const media=img?`<img class="post-cover" src="${escapeHTML(img)}" alt="${escapeHTML(p.title)}" loading="lazy">`:"";
+  const player=embed?`<div class="post-video"><iframe src="${escapeHTML(embed)}" title="${escapeHTML(p.title)} video" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`:
+    video?`<a class="post-video-link" href="${escapeHTML(video)}" target="_blank" rel="noopener noreferrer">Watch video ↗</a>`:"";
+  const date=p.post_date?`${p.post_date.slice(2,4)}-${p.post_date.slice(5,7)}-${p.post_date.slice(8,10)}`:"";
+  return `<li class="feed-item feed-post"><article>
+    <span class="feed-date">${escapeHTML(date)}</span>
+    <details ${open?"open":""}><summary class="post-heading">${escapeHTML(p.title)}</summary>
+      <div class="post-content">
+        ${p.body?`<div class="post-body">${escapeHTML(p.body)}</div>`:""}
+        ${media}${player}
+      </div>
+    </details>
+  </article></li>`;
+}
+
 function renderFeed(){
-  feedContainer.innerHTML=eventsData.length?eventsData.map(e=>card(e)).join(""):'<li class="empty-state">No updates available.</li>';
+  const entries=[
+    ...eventsData.map(e=>({date:e.event_date||"",type:0,html:card(e)})),
+    ...postsData.map((p,i)=>({date:p.post_date||"",type:1,post:p,open:i===0})),
+  ].sort((a,b)=>b.date.localeCompare(a.date)||b.type-a.type);
+  feedContainer.innerHTML=entries.length?entries.map(e=>e.post?postCard(e.post,e.open):e.html).join(""):
+    '<li class="empty-state">No updates available.</li>';
   addEventListeners();
+}
+
+async function loadPosts(){
+  const {data,error}=await supabaseClient.from("editorial_posts")
+    .select("id,title,post_date,body,image_url,video_url,published,created_at")
+    .eq("published",true).order("post_date",{ascending:false})
+    .order("created_at",{ascending:false});
+  if(error){console.warn("Editorial posts unavailable; showing events only:",error.message);return}
+  postsData=data||[];renderFeed();
 }
 
 function renderUpcomingEvents(){
@@ -202,3 +253,4 @@ document.getElementById("instagram-link").href="https://instagram.com";
 document.getElementById("x-link").href="https://x.com";
 document.getElementById("year").textContent=new Date().getFullYear();
 loadEvents();
+loadPosts();

@@ -20,3 +20,10 @@
 .field-help{display:block;margin-top:7px;color:var(--muted);font-family:var(--font-mono);font-size:.68rem;line-height:1.4}.event-image-preview{margin-top:12px}.event-image-preview img{display:block;width:100%;max-width:280px;max-height:360px;object-fit:contain;border:1px solid var(--border)}.image-remove-button{margin-top:10px}
 .subscriber-email{font-size:1rem}.subscriber-name,.subscriber-city{color:var(--muted)}.subscriber-city{font-family:var(--font-mono);font-size:.72rem}
 @media(max-width:800px){.dashboard-page{grid-template-columns:1fr;gap:24px;padding:90px 18px}.dashboard-sidebar{border-right:none;border-bottom:1px solid var(--border);padding-bottom:14px}.dashboard-nav{position:static;flex-direction:row;overflow-x:auto}.stats-grid{grid-template-columns:1fr}.admin-list-item{grid-template-columns:1fr}.admin-list-actions{justify-content:flex-start}}
+
+/* Editorial CMS additions; existing event editor remains unchanged. */
+#overview-add-post{margin-left:8px;margin-top:8px;background:transparent;color:var(--text)}
+#posts-section>.field-help{margin:-22px 0 26px}
+.admin-post-thumb{width:84px;height:92px;object-fit:cover;border:1px solid var(--border)}
+#post-editor-modal[aria-hidden="true"]{display:none}
+@media(max-width:600px){#overview-add-post{margin-left:0}}

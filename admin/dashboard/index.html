@@ -21,6 +21,7 @@
       <nav class="dashboard-nav">
         <button class="dashboard-nav-button active" data-section="overview">Dashboard</button>
         <button class="dashboard-nav-button" data-section="events">Events</button>
+        <button class="dashboard-nav-button" data-section="posts">Posts</button>
         <button class="dashboard-nav-button" data-section="subscribers">Subscribers</button>
       </nav>
     </aside>
@@ -36,6 +37,7 @@
         <div class="dashboard-block">
           <p class="small-label">QUICK ACTION</p>
           <button id="overview-add-event" class="primary-admin-button" type="button">+ Add Event</button>
+          <button id="overview-add-post" class="primary-admin-button" type="button">+ Add Post</button>
         </div>
       </section>
 
@@ -45,6 +47,15 @@
           <button id="add-event-button" class="primary-admin-button" type="button">+ Add Event</button>
         </div>
         <div id="admin-events-list" class="admin-list"><p class="dashboard-loading">Loading events...</p></div>
+      </section>
+
+      <section id="posts-section" class="dashboard-section">
+        <div class="dashboard-section-header">
+          <div><p class="small-label">EDITORIAL / JOURNAL</p><h1>Posts</h1></div>
+          <button id="add-post-button" class="primary-admin-button" type="button">+ Add Post</button>
+        </div>
+        <p class="field-help">Publish dated stories, photographs and YouTube videos directly to the homepage feed.</p>
+        <div id="admin-posts-list" class="admin-list"><p class="dashboard-loading">Loading posts...</p></div>
       </section>
 
       <section id="subscribers-section" class="dashboard-section">
@@ -122,6 +133,33 @@
     </div>
   </div>
 
+  <div id="post-editor-modal" class="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="post-form-heading" aria-hidden="true">
+    <div class="admin-modal">
+      <div class="admin-modal-header">
+        <div><p class="small-label">EDITORIAL</p><h2 id="post-form-heading">Add Post</h2></div>
+        <button id="close-post-editor" class="text-button" type="button" aria-label="Close post editor">[ x ]</button>
+      </div>
+      <form id="post-form">
+        <input id="post-id" type="hidden">
+        <input id="post-existing-image" type="hidden">
+        <div class="form-group"><label for="post-title">Post title</label><input id="post-title" type="text" class="form-input" maxlength="180" required></div>
+        <div class="form-group"><label for="post-date">Post date</label><input id="post-date" type="date" class="form-input" required></div>
+        <div class="form-group"><label for="post-body">Text / story</label><textarea id="post-body" class="form-input admin-textarea" rows="7" maxlength="20000" placeholder="Write your article or a short introduction..."></textarea></div>
+        <div class="form-group"><label for="post-image">Cover photograph</label><input id="post-image" type="file" class="form-input" accept="image/jpeg,image/png,image/webp,image/gif">
+          <div id="post-image-preview" class="event-image-preview"></div>
+          <button id="post-remove-image" type="button" class="admin-action-button image-remove-button" hidden>Remove photograph</button>
+          <small class="field-help">Optional. JPG, PNG, WEBP or GIF, maximum 8 MB. Images are stored on Supabase.</small>
+        </div>
+        <div class="form-group"><label for="post-video">Video URL</label><input id="post-video" type="url" class="form-input" placeholder="https://www.youtube.com/watch?v=...">
+          <small class="field-help">YouTube videos play inside the post. Other public HTTP(S) video links open in a new tab.</small>
+        </div>
+        <div class="checkbox-row"><input id="post-published" type="checkbox"><label for="post-published">Published on the website</label></div>
+        <p id="post-form-message" class="login-message" role="status"></p>
+        <button id="save-post-button" type="submit" class="login-button">Save Post</button>
+      </form>
+    </div>
+  </div>
+
   <footer class="admin-footer">
     <a href="/">← View website</a>
     <span>© <span id="admin-year"></span> Fuglymammie</span>
@@ -129,5 +167,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/admin/dashboard.js"></script>
+  <script src="/admin/posts.js"></script>
 </body>
 </html>

@@ -1,31 +1,42 @@
-Replace the matching files in your current project with these files.
-Keep your existing favicon.png in the project root.
+FUGLYMAMMIE — EDITORIAL CMS (NEW POSTS FEATURE)
+================================================
 
-This version supports:
-- Free events without any URL
-- Ticketed / RSVP / Invite Only event types
-- Event poster/image upload to Supabase bucket: event-media
-- Optional YouTube / TikTok / Instagram video links
-- Public event modal showing poster, entry type, optional action button and optional Watch Video button
+This is an UPDATE to your existing website. It retains Events, upcoming events,
+Subscribers, existing login, mobile layout and purple-awareness introduction.
+It adds a Posts tab to Admin, date-ordered editorial items to the home feed,
+cover-image uploads, YouTube embeds, drafts and publishing controls.
 
+INSTALLATION — TWO PARTS
+------------------------
+A) In the Supabase dashboard for the FUGLYMAMMIE project, open SQL Editor and
+   run EDITORIAL-SETUP.sql once. It creates the editorial_posts table and a
+   separate editorial-media bucket with admin-only write policies.
+   IMPORTANT: do not run this in the IMBUZII project. This conversation's
+   connected Supabase access currently shows IMBUZII only, so the SQL has NOT
+   been applied to Fuglymammie's actual database for you.
 
-PURPLE AWARENESS INTRO
-----------------------
-The homepage now opens with a full-screen purple GBVF awareness message:
-"STOP KILLING OUR SISTERS."
+B) Extract this ZIP. Upload its website files/folders to the root of the
+   existing KevinFela/fuglymammie GitHub repository, preserving paths.
+   Do NOT upload the SQL file or README as part of your public site unless
+   you want to; they are included here as installation instructions.
+   Keep your current favicon.png; it is intentionally not replaced.
+   Wait for GitHub Pages to publish your changes.
 
-Behaviour:
-- Automatically fades into the site after 4.5 seconds.
-- Visitor can choose ENTER SITE immediately.
-- Appears once per browser session using sessionStorage.
-- No database changes required.
-- The existing Fuglymammie feed, events, network form and admin CMS are unchanged.
+ADMIN USE
+---------
+Visit https://fuglymammie.co.za/admin/ and sign in with your existing admin
+account. In the dashboard choose Posts > + Add Post. Enter date, headline,
+optional story, photo, video link, and tick Published on the website to show
+it publicly. Leave unticked for a draft. The latest post opens in the feed;
+older posts expand on tap. YouTube links play inline; other HTTP(S) links
+open in a new tab. Images are limited to 8 MB.
 
-MOBILE FIX (iPhone/Safari)
---------------------------
-- Prevents Safari text auto-enlargement.
-- Fixes the fixed header overlapping/cutting off the first event.
-- Keeps the existing Fuglymammie typography and feed proportions.
-- Makes the purple awareness intro fit a 414px-wide iPhone viewport cleanly.
-- Resets the page to the top when the intro fades out.
-- Uses a new one-per-session intro key so the revised intro appears once after deployment.
+SAFETY / LIMITATIONS
+--------------------
+- Never put a Supabase secret/service-role key into these browser files.
+- All uploaded cover images are publicly accessible once uploaded, even
+  when a post itself is still a draft. Don't upload private/embargoed photos.
+- This version embeds YouTube videos, but does not upload/host video files.
+- Existing event-media bucket and event/subscriber data are unchanged.
+- SQL is provided for manual application; this ZIP alone does not create
+  your database table or storage bucket.

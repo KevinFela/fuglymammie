@@ -249,3 +249,18 @@ body.fm-intro-lock{overflow:hidden}
   .purple-awareness{transition:none}
   .purple-awareness__timer span{animation:none;transform:scaleX(1)}
 }
+
+/* Editorial feed: dated essays, photographs and embedded videos. */
+.feed-post{cursor:default}
+.post-heading{display:list-item;cursor:pointer;list-style:none;text-decoration:underline;text-underline-offset:3px;font-size:1.2rem;line-height:1.35}
+.post-heading::-webkit-details-marker{display:none}
+.post-heading::after{content:"+";float:right;margin-left:12px;color:var(--date-gray);text-decoration:none}
+.feed-post details[open]>.post-heading::after{content:"−"}
+.feed-post details[open]>.post-heading{margin-bottom:14px}
+.post-content{display:grid;gap:14px;min-width:0}
+.post-body{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;font-size:1rem}
+.post-cover{display:block;width:100%;height:auto;max-height:740px;object-fit:contain;background:#eee}
+.post-video{position:relative;width:100%;aspect-ratio:16/9;background:#121212}
+.post-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.post-video-link{display:inline-block;width:max-content;max-width:100%;overflow-wrap:anywhere;color:inherit;font-size:1rem}
+@media(max-width:600px){.post-heading{font-size:1.13rem}.post-body{font-size:.96rem}}
